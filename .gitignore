@@ -3,3 +3,5 @@
 .idea
 /preprocessing/trained_models
 **/__pycache__
+irisverify/staticfiles
+irisverify/db.sqlite3

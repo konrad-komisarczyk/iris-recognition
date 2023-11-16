@@ -1,0 +1,19 @@
+{% extends 'index.html' %}
+
+{% block content %}
+    {% load crispy_forms_tags %}
+    <div class="container">
+        <h3 class="py-3">Strona rejestracji</h3>
+        <div class="d-flex justify-content-center">
+            <form method="POST" class="registration_form" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.username|as_crispy_field }}
+                {{ form.iris_image|as_crispy_field }}
+                <div class="d-flex justify-content-center">
+                    <button type="submit" class="btn btn-outline-primary my-2">Utwórz konto</button>
+                </div>
+                <div class="py-2 h5">Rejestracja nie wiąże się z zapisem zdjęcia!</div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

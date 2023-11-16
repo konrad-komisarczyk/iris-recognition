@@ -1,0 +1,27 @@
+{% extends 'index.html' %}
+
+{% block content %}
+    {% load crispy_forms_tags %}
+    <div class="container">
+        <h3 class="py-3">Strona logowania</h3>
+        <div class="d-flex justify-content-center">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.username|as_crispy_field }}
+                {{ form.iris_image|as_crispy_field }}
+                {% if login_error == True %}
+                <div class="alert alert-danger mt-2 mb-1" role="alert">
+                    Weryfikacja tożsamości nie przebiegła pomyślnie.
+                </div>
+                {% endif %}
+                <div class="d-flex justify-content-center">
+                    <button type="submit" class="btn btn-outline-primary my-2">Zaloguj się</button>
+                </div>
+                <div class="py-2 h5">Nie posiadasz jeszcze konta? Zarejestruj się!</div>
+                <div class="d-flex justify-content-center">
+                    <a role="button" href="{% url 'register_view' %}" class="btn btn-outline-primary">Rejestracja</a>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

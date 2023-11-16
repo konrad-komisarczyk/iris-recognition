@@ -1,0 +1,48 @@
+.greeting {
+    font-size: large;
+    font-weight: bold;
+}
+
+.container {
+    width: 80%;
+    text-align: center;
+}
+
+h2 {
+    text-align: center;
+    border-bottom: 2px solid black;
+    padding-bottom: 4px;
+}
+
+h4 {
+    text-align: center;
+}
+
+h3 {
+    text-align: center;
+}
+
+ul {
+    text-align: center;
+    font-size: x-large;
+}
+
+.registration_form ul {
+    font-size: medium;
+}
+
+
+footer {
+    margin-top: auto;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-control-file {
+    margin: auto;
+    width: 55%;
+}
