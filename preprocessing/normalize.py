@@ -48,7 +48,8 @@ def daugman_normalizaiton(image, height, width, r_in, r_out):  # Daugman归一�
     return flat  # liang
 
 
-def normalize(file_name, folder_path):
+def normalize(file_name, folder_path, out_height, out_width):
+    file_name = file_name.split(".")[0]
     inner_path = os.path.join(folder_path, f"{file_name}_inner_boundary.png")
     outher_path = os.path.join(folder_path, f"{file_name}_outer_boundary.png")
     iris_path = os.path.join(folder_path, f"{file_name}_iris.png")
@@ -68,7 +69,7 @@ def normalize(file_name, folder_path):
 
     iris = io.imread(iris_path, as_gray=True).astype(float)
 
-    result = daugman_normalizaiton(iris, 50, 100, inner_radius, outher_radius)
+    result = daugman_normalizaiton(iris, out_height, out_width, inner_radius, outher_radius)
 
     io.imsave(os.path.join(folder_path, f'{file_name}_normalized.png'), result)
 

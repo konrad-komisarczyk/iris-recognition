@@ -17,10 +17,10 @@ for folder in os.listdir(data_dir):
 
                     subprocess.run(["python", "predict_one_img.py", "--gpu", "0", "--img_path", os.path.join(single_eye_path, img),"--save_dir", single_eye_path, "--model", "M1"])
 
-                    file_name = img.split(".")[0]
-                    get_iris(file_name, single_eye_path)
-                    normalize(file_name, single_eye_path)
+                    get_iris(img, single_eye_path)
+                    normalize(img, single_eye_path, 50, 100)
 
+                    file_name = img.split(".")[0]
                     files_to_delete = [os.path.join(single_eye_path, f"{file_name}_inner_boundary.png"),
                                        os.path.join(single_eye_path, f"{file_name}_outer_boundary.png"),
                                        os.path.join(single_eye_path, f"{file_name}_iris.png"),

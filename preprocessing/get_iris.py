@@ -5,8 +5,8 @@ import os
 
 
 def get_iris(file_name, folder_path):
-    img_path = os.path.join(folder_path, f"{file_name}.bmp")
-    result_path = os.path.join(folder_path, f"{file_name}_seg.png")
+    img_path = os.path.join(folder_path, file_name)
+    result_path = os.path.join(folder_path, f"{file_name.split('.')[0]}_seg.png")
 
     img = io.imread(img_path, as_gray=True).astype(float)
 
@@ -28,7 +28,7 @@ def get_iris(file_name, folder_path):
     iris = np.vstack([np.zeros([vertical_dim-horizontal_dim, vertical_dim]), iris])
 
     iris = ((iris) * 255).astype(np.uint8)
-    cv2.imwrite(os.path.join(folder_path, f"{file_name}_iris.png"), iris)
+    cv2.imwrite(os.path.join(folder_path, f"{file_name.split('.')[0]}_iris.png"), iris)
 
 
 
