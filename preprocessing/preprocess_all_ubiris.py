@@ -14,15 +14,11 @@ destination_dir = os.path.join(base_dir, "ubiris2_1_preprocessed")
 exception_count = 0
 
 start = time.time()
-for img in tqdm(os.listdir(data_dir)[:500]):  # Only first 500 images, takes a little less than 2 hours
+for img in tqdm(sorted(os.listdir(data_dir))[:500]):  # Only first 500 images, takes a little less than 2 hours
     if img[-4:] == "tiff":
         eye_id = int(img.split(".")[0].split("_")[0][1:])
-        if eye_id % 2 != 0:
-            person_id = eye_id // 2 + 1
-        else:
-            person_id = eye_id // 2
 
-        cur_dest_dir = os.path.join(destination_dir, str(person_id))
+        cur_dest_dir = os.path.join(destination_dir, str(eye_id))
         if not os.path.isdir(cur_dest_dir):
             os.mkdir(cur_dest_dir)
 
