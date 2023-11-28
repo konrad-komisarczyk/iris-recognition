@@ -14,7 +14,7 @@ destination_dir = os.path.join(base_dir, "ubiris2_1_preprocessed")
 exception_count = 0
 
 start = time.time()
-for img in tqdm(os.listdir(data_dir)[:500]):
+for img in tqdm(os.listdir(data_dir)[:500]):  # Only first 500 images, takes a little less than 2 hours
     if img[-4:] == "tiff":
         eye_id = int(img.split(".")[0].split("_")[0][1:])
         if eye_id % 2 != 0:
@@ -26,8 +26,6 @@ for img in tqdm(os.listdir(data_dir)[:500]):
         if not os.path.isdir(cur_dest_dir):
             os.mkdir(cur_dest_dir)
 
-        # print(os.path.join(destination_dir, img))
-        # print(cur_dest_dir)
         subprocess.run(
             ["python", "predict_one_img.py", "--gpu", "0", "--img_path", os.path.join(data_dir, img),
              "--save_dir", cur_dest_dir, "--model", "M1"])
