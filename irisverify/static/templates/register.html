@@ -9,6 +9,11 @@
                 {% csrf_token %}
                 {{ form.username|as_crispy_field }}
                 {{ form.iris_image|as_crispy_field }}
+                {% if username_taken == True %}
+                <div class="alert alert-danger mt-2 mb-1" role="alert">
+                    Wybrana nazwa użytkownika jest zajęta
+                </div>
+                {% endif %}
                 <div class="d-flex justify-content-center">
                     <button type="submit" class="btn btn-outline-primary my-2">Utwórz konto</button>
                 </div>

@@ -14,6 +14,11 @@
                     Weryfikacja tożsamości nie przebiegła pomyślnie.
                 </div>
                 {% endif %}
+                {% if user_exists == False %}
+                <div class="alert alert-danger mt-2 mb-1" role="alert">
+                    Użytkownik o podanej nazwie nie istnieje.
+                </div>
+                {% endif %}
                 <div class="d-flex justify-content-center">
                     <button type="submit" class="btn btn-outline-primary my-2">Zaloguj się</button>
                 </div>
