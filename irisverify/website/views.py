@@ -20,28 +20,36 @@ def secrets(request):
 
 
 def login_view(request):
-    user = None
+    login_error = False
+    user_exists = True
     if request.method == 'POST':
         form = WebsiteUserLoginForm(request.POST, request.FILES)
         if form.is_valid():
             username = form.cleaned_data["username"]
             iris_image = form.cleaned_data["iris_image"]
+            if username_exists(username):
+                user = authenticate(username=username, iris_image=iris_image)
 
-            user = authenticate(username=username, iris_image=iris_image)
-
-            if user is not None:
-                login(request, user)
-                return redirect('index')
-        login_error = True
+                if user is not None:
+                    login(request, user)
+                    return redirect('index')
+            else:
+                user_exists = False
+        else:
+            login_error = True
     else:
         form = WebsiteUserLoginForm()
         login_error = False
-    return render(request, "login.html", {"form": form, "login_error": login_error})
+    return render(request, "login.html", {"form": form, "login_error": login_error, "user_exists": user_exists})
 
 
 def logout_view(request):
     logout(request)
     return redirect('login_view')
+
+
+def username_exists(username):
+    return User.objects.filter(username=username).exists()
 
 
 def register_view(request):
@@ -50,13 +58,16 @@ def register_view(request):
         if form.is_valid():
             username = form.cleaned_data["username"]
             iris_image = form.cleaned_data["iris_image"]
-            user_tmp = User(username=username)
-            user_tmp.save()
-            websiteuser = WebsiteUser.objects.get(user=user_tmp)
-            websiteuser.feature_vector = extract_feature_vector(iris_image)
-            websiteuser.save()
-            user = authenticate(username=username, iris_image=iris_image, just_registered=True)
-            login(request, user)
-            return redirect("index")
+            if not username_exists(username):
+                user_tmp = User(username=username)
+                user_tmp.save()
+                websiteuser = WebsiteUser.objects.get(user=user_tmp)
+                websiteuser.feature_vector = extract_feature_vector(iris_image)
+                websiteuser.save()
+                user = authenticate(username=username, iris_image=iris_image, just_registered=True)
+                login(request, user)
+                return redirect("index")
+            else:
+                return render(request, "register.html", {"form": form, "username_taken": True})
     form = WebsiteUserCreationForm()
-    return render(request=request, template_name="register.html", context={"form": form})
+    return render(request, "register.html", {"form": form})
