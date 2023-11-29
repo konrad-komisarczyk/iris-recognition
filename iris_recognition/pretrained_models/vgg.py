@@ -113,7 +113,7 @@ class VggPretrained(PretrainedModel):
         dir_to_save = self.path_organizer.get_finetuned_model_dir(self.name, tag)
         self.logger.info(f"Saving model to dir {dir_to_save} to file {model_filename}")
         os.makedirs(dir_to_save, exist_ok=True)
-        torch.save(self.model, model_filename)
+        torch.save(self.model, os.path.join(dir_to_save, model_filename))
 
     def get_transform(self) -> Any:
         return transforms.Compose([
