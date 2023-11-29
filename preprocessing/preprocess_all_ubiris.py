@@ -10,7 +10,7 @@ import time
 base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 data_dir = os.path.join(base_dir, "ubiris2_1", "CLASSES_400_300_Part1")
 destination_dir = os.path.join(base_dir, "ubiris2_1_preprocessed")
-
+os.makedirs(destination_dir, exist_ok=True)
 exception_count = 0
 
 start = time.time()
