@@ -1,6 +1,6 @@
 from typing import Any
 
-from iris_recognition.pretrained_models import PretrainedModel
+from iris_recognition.pretrained_models.pretrained_model import PretrainedModel
 from iris_recognition.pretrained_models.pretrained_model import TrainingParams
 from iris_recognition.trainset import Trainset
 

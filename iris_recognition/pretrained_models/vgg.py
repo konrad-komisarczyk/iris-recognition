@@ -7,7 +7,7 @@ import torch
 from torchvision import transforms
 from torchvision.models import vgg16
 
-from iris_recognition.pretrained_models import PretrainedModel
+from iris_recognition.pretrained_models.pretrained_model import PretrainedModel
 from iris_recognition.pretrained_models.pretrained_model import TrainingParams
 from iris_recognition.trainset import Trainset
 
