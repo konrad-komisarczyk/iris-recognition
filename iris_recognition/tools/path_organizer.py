@@ -33,4 +33,3 @@ class PathOrganizer:
         :return: path to the finetuned model
         """
         return os.path.join(self.prefix, "data", "finetuned_models", model_name, tag)
-

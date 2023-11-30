@@ -5,14 +5,14 @@ from iris_recognition.pretrained_models.pretrained_model import TrainingParams
 from iris_recognition.trainset import Trainset
 
 
-class AlexnetPretrained(PretrainedModel):
+class GooglenetPretrained(PretrainedModel):
     """
-    Pretrained AlexNet model class
+    Pretrained GoogLeNet model class
     """
 
     @property
     def name(self) -> str:
-        return "AlexNet"
+        return "GoogLeNet"
 
     def train(self, trainset: Trainset, params: TrainingParams) -> None:
         raise NotImplementedError()
