@@ -8,19 +8,18 @@ import time
 
 
 base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-data_dir = os.path.join(base_dir, "ubiris2_1", "CLASSES_400_300_Part1")
-destination_dir = os.path.join(base_dir, "ubiris2_1_preprocessed")
+data_dir = os.path.join(base_dir, "ubiris2_1", "CLASSES_400_300_Part1")  # performed separately for both parts
+destination_dir = os.path.join(base_dir, "ubiris2_1_preprocessed")  # performed separately for both parts
 os.makedirs(destination_dir, exist_ok=True)
 exception_count = 0
 
 start = time.time()
-for img in tqdm(sorted(os.listdir(data_dir))[:500]):  # Only first 500 images, takes a little less than 2 hours
+for img in tqdm(sorted(os.listdir(data_dir))):
     if img[-4:] == "tiff":
         eye_id = int(img.split(".")[0].split("_")[0][1:])
 
         cur_dest_dir = os.path.join(destination_dir, str(eye_id))
-        if not os.path.isdir(cur_dest_dir):
-            os.mkdir(cur_dest_dir)
+        os.makedirs(cur_dest_dir, exist_ok=True)
 
         subprocess.run(
             ["python", "predict_one_img.py", "--gpu", "0", "--img_path", os.path.join(data_dir, img),

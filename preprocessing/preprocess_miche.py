@@ -13,6 +13,7 @@ data_dir2 = os.path.join(base_dir, "miche_SamsungGalaxyTab2", "SamsungGalaxyTab2
 data_dir3 = os.path.join(base_dir, "miche_SamsungGalaxyS4", "SamsungGalaxyS4")
 
 destination_dir = os.path.join(base_dir, "miche_preprocessed")
+os.makedirs(destination_dir, exist_ok=True)
 
 exception_count = 0
 
@@ -41,8 +42,7 @@ start = time.time()
 for img in tqdm(image_list):
     img_args = img.split("_")
     cur_dest_dir = os.path.join(destination_dir, str(img_args[0]))
-    if not os.path.isdir(cur_dest_dir):
-        os.mkdir(cur_dest_dir)
+    os.makedirs(cur_dest_dir, exist_ok=True)
 
     if "IP5" in img:
         data_dir = data_dir1

@@ -7,7 +7,15 @@ irisverify/staticfiles
 irisverify/db.sqlite3
 /ubiris2_1
 /ubiris2_1_preprocessed
+/ubiris2_2
+/ubiris2_2_preprocessed
+/ubiris_all_preprocessed
+/ubiris_filtered
 /miche_iPhone5
 /miche_SamsungGalaxyTab2
 /miche_SamsungGalaxyS4
 /miche_preprocessed
+/miche_filtered
+/mmu_preprocessed
+/mmu_filtered
+/all_preprocessed_filtered

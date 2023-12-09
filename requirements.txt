@@ -10,3 +10,4 @@ transformers
 Pillow
 opencv-python
 scikit-image
+split-folders
