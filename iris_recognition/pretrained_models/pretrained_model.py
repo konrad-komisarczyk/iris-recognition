@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import abc
 from abc import abstractmethod
 from dataclasses import dataclass
 from typing import Any
@@ -19,7 +20,7 @@ class TrainingParams:
     weight_decay: float
 
 
-class PretrainedModel:
+class PretrainedModel(abc.ABC):
     """
     Class representing pretrained model. Used to finetune model
     """
