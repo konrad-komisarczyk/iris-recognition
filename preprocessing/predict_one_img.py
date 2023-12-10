@@ -169,5 +169,3 @@ io.imsave(os.path.join(args.save_dir, '{}_inner_boundary.png'.format(basename)),
           check_contrast=False)
 io.imsave(os.path.join(args.save_dir, '{}_outer_boundary.png'.format(basename)), outer_save.astype(np.uint8),
           check_contrast=False)
-
-print('done')
