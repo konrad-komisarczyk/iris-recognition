@@ -9,7 +9,7 @@ class IrisBackend(BaseBackend):
         try:
             user = User.objects.get(username=username)
             feature_vector = user.websiteuser.feature_vector
-            if (feature_vector is not None and verify(iris_image, feature_vector)) or just_registered:
+            if just_registered or (feature_vector is not None and verify(iris_image, feature_vector)):
                 return user
         except User.DoesNotExist:
             return None

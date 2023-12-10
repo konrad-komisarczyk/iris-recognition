@@ -12,11 +12,18 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os
 from pathlib import Path
+import sys
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+PROJ_DIR = Path(__file__).resolve().parent.parent.parent
+TMP_FILES_DIR = os.path.join(BASE_DIR, "TMP_FILES")
 
+sys.path.append(PROJ_DIR.as_posix())
 
+from iris_recognition.preprocessing.preprocessor import Preprocessor
+
+PREPROCESSOR = Preprocessor()
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -27,7 +34,6 @@ SECRET_KEY = 'django-insecure-!vkl_alkl%dc6^a6vbh@65f8%kn=jy9ssso06xxs1c-68(uz3b
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -89,7 +95,6 @@ DATABASES = {
     }
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
@@ -108,7 +113,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -119,7 +123,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/

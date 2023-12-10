@@ -4,7 +4,7 @@ import sys
 import os
 
 # setting path
-base_dir = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..'))
+base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 site_packages_path = os.path.join(base_dir, "venv", "Lib", "site-packages")
 sys.path.append(site_packages_path)
 
@@ -62,18 +62,18 @@ elif args.model.lower() == 'africa':
     input_size = (384, 640)
 elif args.model.lower() == 'm1':
     seg_model_path = [
-        'trained_models/M1/Seg/finetune_UNet_ResNet34/bs28_epoch100_fold0/best_acc.pth',
-        'trained_models/M1/Seg/finetune_UNet_ResNet34/bs28_epoch100_fold1/best_acc.pth',
-        'trained_models/M1/Seg/finetune_UNet_ResNet34/bs28_epoch100_fold2/best_acc.pth',
-        'trained_models/M1/Seg/finetune_UNet_ResNet34/bs28_epoch100_fold3/best_acc.pth',
-        'trained_models/M1/Seg/finetune_UNet_ResNet34/bs28_epoch100_fold4/best_acc.pth'
+        os.path.join(base_dir, 'preprocessing', 'trained_models/M1/Seg/finetune_UNet_ResNet34/bs28_epoch100_fold0/best_acc.pth'),
+        os.path.join(base_dir, 'preprocessing', 'trained_models/M1/Seg/finetune_UNet_ResNet34/bs28_epoch100_fold1/best_acc.pth'),
+        os.path.join(base_dir, 'preprocessing', 'trained_models/M1/Seg/finetune_UNet_ResNet34/bs28_epoch100_fold2/best_acc.pth'),
+        os.path.join(base_dir, 'preprocessing', 'trained_models/M1/Seg/finetune_UNet_ResNet34/bs28_epoch100_fold3/best_acc.pth'),
+        os.path.join(base_dir, 'preprocessing', 'trained_models/M1/Seg/finetune_UNet_ResNet34/bs28_epoch100_fold4/best_acc.pth')
     ]
     local_model_path = [
-        'trained_models/M1/Local_inner_outer/finetune_UNet_ResNet34/bs24_epoch150_fold0/best_model.pth',
-        'trained_models/M1/Local_inner_outer/finetune_UNet_ResNet34/bs24_epoch150_fold1/best_model.pth',
-        'trained_models/M1/Local_inner_outer/finetune_UNet_ResNet34/bs24_epoch150_fold2/best_model.pth',
-        'trained_models/M1/Local_inner_outer/finetune_UNet_ResNet34/bs24_epoch150_fold3/best_model.pth',
-        'trained_models/M1/Local_inner_outer/finetune_UNet_ResNet34/bs24_epoch150_fold4/best_model.pth'
+        os.path.join(base_dir, 'preprocessing', 'trained_models/M1/Local_inner_outer/finetune_UNet_ResNet34/bs24_epoch150_fold0/best_model.pth'),
+        os.path.join(base_dir, 'preprocessing', 'trained_models/M1/Local_inner_outer/finetune_UNet_ResNet34/bs24_epoch150_fold1/best_model.pth'),
+        os.path.join(base_dir, 'preprocessing', 'trained_models/M1/Local_inner_outer/finetune_UNet_ResNet34/bs24_epoch150_fold2/best_model.pth'),
+        os.path.join(base_dir, 'preprocessing', 'trained_models/M1/Local_inner_outer/finetune_UNet_ResNet34/bs24_epoch150_fold3/best_model.pth'),
+        os.path.join(base_dir, 'preprocessing', 'trained_models/M1/Local_inner_outer/finetune_UNet_ResNet34/bs24_epoch150_fold4/best_model.pth')
     ]
     input_size = (416, 416)
 
@@ -144,7 +144,8 @@ seg_prediction /= 20
 seg_prediction = cv2.resize(seg_prediction, (original_shape[1], original_shape[0]), interpolation=cv2.INTER_LINEAR)
 _, seg_prediction = cv2.threshold(seg_prediction, 0.5, 1, 0)
 seg_prediction = keep_large_area(seg_prediction, top_n_large=1)
-io.imsave(os.path.join(args.save_dir, '{}_seg.png'.format(basename)), (seg_prediction * 255).astype(np.uint8), check_contrast=False)
+io.imsave(os.path.join(args.save_dir, '{}_seg.png'.format(basename)), (seg_prediction * 255).astype(np.uint8),
+          check_contrast=False)
 
 inner_prediction /= 20
 outer_prediction /= 20
@@ -164,7 +165,7 @@ outer_save = np.zeros(outer_prediction.shape)
 contours, _ = cv2.findContours(outer_prediction, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 cv2.drawContours(outer_save, contours, -1, 255, 1)
 
-io.imsave(os.path.join(args.save_dir, '{}_inner_boundary.png'.format(basename)), inner_save.astype(np.uint8), check_contrast=False)
-io.imsave(os.path.join(args.save_dir, '{}_outer_boundary.png'.format(basename)), outer_save.astype(np.uint8), check_contrast=False)
-
-print('done')
+io.imsave(os.path.join(args.save_dir, '{}_inner_boundary.png'.format(basename)), inner_save.astype(np.uint8),
+          check_contrast=False)
+io.imsave(os.path.join(args.save_dir, '{}_outer_boundary.png'.format(basename)), outer_save.astype(np.uint8),
+          check_contrast=False)

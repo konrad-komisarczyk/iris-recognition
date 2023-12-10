@@ -49,7 +49,7 @@ def logout_view(request):
 
 
 def username_exists(username):
-    return User.objects.filter(username=username).exists()
+    return WebsiteUser.objects.filter(user__in=User.objects.filter(username=username).all()).exists()
 
 
 def register_view(request):
