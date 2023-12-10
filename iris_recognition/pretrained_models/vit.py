@@ -1,8 +1,9 @@
-from typing import Any
+from __future__ import annotations
+
+from torch import nn
+from torchvision.models import vit_b_16
 
 from iris_recognition.pretrained_models.pretrained_model import PretrainedModel
-from iris_recognition.pretrained_models.pretrained_model import TrainingParams
-from iris_recognition.trainset import Trainset
 
 
 class VitPretrained(PretrainedModel):
@@ -10,15 +11,13 @@ class VitPretrained(PretrainedModel):
     Pretrained ViT model class
     """
 
+    def __init__(self, prefix: str | None = None) -> None:
+        super().__init__(prefix)
+        self.model = vit_b_16(weights='DEFAULT')
+
     @property
     def name(self) -> str:
         return "ViT"
 
-    def train(self, trainset: Trainset, params: TrainingParams) -> None:
-        raise NotImplementedError()
-
-    def save_as_finetuned(self, tag: str) -> None:
-        raise NotImplementedError()
-
-    def get_transform(self) -> Any:
-        raise NotImplementedError()
+    def prepare_classification_layers(self, num_classes: int) -> None:
+        self.model.heads.head = nn.Linear(self.model.hidden_dim, num_classes)
