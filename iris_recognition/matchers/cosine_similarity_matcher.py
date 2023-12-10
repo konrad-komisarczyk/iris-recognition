@@ -1,5 +1,4 @@
 import torch
-from torch import tensor
 
 from iris_recognition.extracted_features import ExtractedFeatures
 from iris_recognition.matchers.matcher import Matcher
