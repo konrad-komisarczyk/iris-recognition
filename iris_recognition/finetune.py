@@ -4,6 +4,8 @@ import argparse
 import logging
 import sys
 
+from PIL import Image
+
 from iris_recognition.models import pretrained_model_name_to_class, get_pretrained_model_by_name
 from iris_recognition.models.model import TrainingParams
 from iris_recognition.tools.logger import set_loggers_stderr_verbosity
@@ -44,6 +46,8 @@ def finetune(parsed_args: argparse.Namespace) -> None:
     model.prepare_pretrained(trainset.num_classes())
     model.train(trainset, training_params)
     model.save(parsed_args.tag)
+
+    model.log_node_names()
 
 
 def main(args: list[str] | None) -> None:

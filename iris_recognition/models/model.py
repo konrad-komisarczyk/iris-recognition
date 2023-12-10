@@ -8,7 +8,11 @@ from dataclasses import dataclass
 
 import torch
 from torchvision import transforms
+from torchvision.models.feature_extraction import get_graph_node_names
+from torchvision.models.feature_extraction import create_feature_extractor
+from PIL.Image import Image
 
+from iris_recognition.extracted_features import ExtractedFeatures
 from iris_recognition.tools.logger import get_logger
 from iris_recognition.tools.path_organizer import PathOrganizer
 from iris_recognition.trainset import Trainset
@@ -175,3 +179,21 @@ class Model(abc.ABC):
         """
         model_path = self.path_organizer.get_finetuned_model_path(self.name, tag)
         self.model = torch.load(model_path)
+
+    def log_node_names(self) -> None:
+        train_nodes, eval_nodes = get_graph_node_names(self.model)
+        self.logger.info("Model node names that can be used for feature extraction:")
+        self.logger.info(f"Train nodes: {train_nodes}")
+        self.logger.info(f"Eval nodes: {eval_nodes}")
+
+    def extract_features(self, node_name: str, preprocessed_image: Image) -> ExtractedFeatures:
+        """
+        :param node_name: name of the node to extract features from
+        :param preprocessed_image: preprocessed image
+        :return: extracted features
+        """
+        feature_extractor = create_feature_extractor(self.model, [node_name])
+        transform = self.get_transform()
+        transformed_image = transform(preprocessed_image)
+        extracted_features_value = feature_extractor(transformed_image)[node_name]
+        return ExtractedFeatures(extracted_features_value)
