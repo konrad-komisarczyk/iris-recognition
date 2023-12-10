@@ -30,6 +30,21 @@ class PathOrganizer:
         """
         :param model_name: model name
         :param tag: model's training tag
-        :return: path to the finetuned model
+        :return: path to the finetuned model dir
         """
         return os.path.join(self.prefix, "data", "finetuned_models", model_name, tag)
+
+    @staticmethod
+    def get_finetuned_model_filename() -> str:
+        """
+        :return: filename the finetuned model
+        """
+        return "model.pt"
+
+    def get_finetuned_model_path(self, model_name: str, tag: str) -> str:
+        """
+        :param model_name: model name
+        :param tag: model's training tag
+        :return: path to the finetuned model
+        """
+        return os.path.join(self.get_finetuned_model_dir(model_name, tag), self.get_finetuned_model_filename())

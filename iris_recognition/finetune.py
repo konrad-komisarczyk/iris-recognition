@@ -4,8 +4,8 @@ import argparse
 import logging
 import sys
 
-from iris_recognition.pretrained_models import pretrained_model_name_to_class, get_pretrained_model_by_name
-from iris_recognition.pretrained_models.pretrained_model import TrainingParams
+from iris_recognition.models import pretrained_model_name_to_class, get_pretrained_model_by_name
+from iris_recognition.models.model import TrainingParams
 from iris_recognition.tools.logger import set_loggers_stderr_verbosity
 from iris_recognition.trainset import AVAILABLE_DATASETS, Trainset
 
@@ -41,8 +41,9 @@ def finetune(parsed_args: argparse.Namespace) -> None:
     model = get_pretrained_model_by_name(parsed_args.model)
     transform = model.get_transform()
     trainset = Trainset.load_dataset(parsed_args.datasets, transform, parsed_args.trainset_len_limit)
+    model.prepare_pretrained(trainset.num_classes())
     model.train(trainset, training_params)
-    model.save_as_finetuned(parsed_args.tag)
+    model.save(parsed_args.tag)
 
 
 def main(args: list[str] | None) -> None:
