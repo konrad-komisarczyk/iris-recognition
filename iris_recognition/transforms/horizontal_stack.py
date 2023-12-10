@@ -1,7 +1,6 @@
 import numpy as np
 import torch
 from PIL import Image
-from torchvision.utils import _log_api_usage_once
 
 
 class HorizontalStack(torch.nn.Module):
@@ -11,18 +10,9 @@ class HorizontalStack(torch.nn.Module):
 
     def __init__(self, p=2):
         super().__init__()
-        _log_api_usage_once(self)
         self.p = p
 
     def forward(self, img):
-        """
-        Args:
-            img (PIL Image or Tensor): Image to be flipped.
-
-        Returns:
-            PIL Image or Tensor: Randomly flipped image.
-        """
-
         imgs = [img for _ in range(self.p)]
 
         imgs_comb = np.vstack(imgs)
