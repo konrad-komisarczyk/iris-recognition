@@ -6,7 +6,7 @@ import sys
 
 from PIL import Image
 
-from iris_recognition.models import pretrained_model_name_to_class, get_pretrained_model_by_name
+from iris_recognition.models import model_name_to_class, get_model_by_name
 from iris_recognition.models.model import TrainingParams
 from iris_recognition.tools.logger import set_loggers_stderr_verbosity
 from iris_recognition.trainset import AVAILABLE_DATASETS, Trainset
@@ -17,8 +17,8 @@ def get_parser() -> argparse.ArgumentParser:
     :return: argv parser
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", type=str, required=True, choices=list(pretrained_model_name_to_class.keys()),
-                        help=f"Name of the model to train, choose one of {list(pretrained_model_name_to_class.keys())}")
+    parser.add_argument("--model", type=str, required=True, choices=list(model_name_to_class.keys()),
+                        help=f"Name of the model to train, choose one of {list(model_name_to_class.keys())}")
     parser.add_argument("--datasets", type=str, required=True, nargs="+", choices=AVAILABLE_DATASETS,
                         help=f"Names of the trainsets to include to trainset, choose from {AVAILABLE_DATASETS}")
     parser.add_argument("--trainset_len_limit", type=int, required=False,
@@ -40,7 +40,7 @@ def finetune(parsed_args: argparse.Namespace) -> None:
     """
     training_params = TrainingParams(num_epochs=parsed_args.num_epochs, learning_rate=parsed_args.learning_rate,
                                      weight_decay=parsed_args.weight_decay)
-    model = get_pretrained_model_by_name(parsed_args.model)
+    model = get_model_by_name(parsed_args.model)
     transform = model.get_transform()
     trainset = Trainset.load_dataset(parsed_args.datasets, transform, parsed_args.trainset_len_limit)
     model.prepare_pretrained(trainset.num_classes())

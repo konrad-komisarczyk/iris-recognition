@@ -2,11 +2,13 @@ crispy-bootstrap4
 Django
 django-crispy-forms
 fontawesomefree
+matplotlib
 numpy
 torch
 torchvision
 tqdm
 transformers
+pandas
 Pillow
 opencv-python
 scikit-image

@@ -6,6 +6,7 @@ from typing import Any
 import numpy as np
 from PIL import Image
 from torch.utils.data import DataLoader, Dataset, SubsetRandomSampler
+from torchvision import transforms
 
 from iris_recognition.tools.logger import get_logger
 from iris_recognition.tools.path_organizer import PathOrganizer
@@ -20,9 +21,9 @@ class Trainset(Dataset):
     """
     SEED = 213
 
-    def __init__(self, transform: Any, valid_size: float = 0.3, batch_size: int = 1) -> None:
+    def __init__(self, transform: transforms.Compose | None, valid_size: float = 0.1, batch_size: int = 1) -> None:
         """
-        :param transform: transform function to be applied to images
+        :param transform: transform function to be applied to images, or None if no transform should be applied
         :param valid_size: fraction of validation set, default 0.3
         :param batch_size: batch size, default 1
         """
