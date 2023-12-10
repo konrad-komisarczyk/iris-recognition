@@ -1,13 +1,11 @@
 import abc
 
-import numpy as np
-
 from iris_recognition.extracted_features import ExtractedFeatures
 
 
 class Matcher(abc.ABC):
     """
-
+    Class representing matcher. Used to match extracted features.
     """
 
     @abc.abstractmethod
