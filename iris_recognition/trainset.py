@@ -12,7 +12,7 @@ from iris_recognition.tools.logger import get_logger
 from iris_recognition.tools.path_organizer import PathOrganizer
 
 
-AVAILABLE_DATASETS = ["miche", "mmu", "ubiris"]
+AVAILABLE_DATASETS = ["miche", "mmu", "ubiris", "all_filtered"]
 
 
 class Trainset(Dataset):
