@@ -12,7 +12,7 @@ from iris_recognition.tools.logger import get_logger
 from iris_recognition.tools.path_organizer import PathOrganizer
 
 
-AVAILABLE_DATASETS = ["miche", "mmu", "ubiris", "all_filtered"]
+AVAILABLE_DATASETS = ["miche", "mmu", "ubiris", "all_filtered_train", "all_filtered_val"]
 
 
 class Trainset(Dataset):
@@ -72,7 +72,7 @@ class Trainset(Dataset):
         res = Trainset(transform)
         res.logger.info(f"Loading Trainset examples...")
         for dataset_name in dataset_names:
-            dataset_train_dir = os.path.join(path_organizer.get_dataset_preprocessed(dataset_name), "train")
+            dataset_train_dir = path_organizer.get_dataset_preprocessed(dataset_name)
             res._load_examples_from_dir(dataset_train_dir, limit_examples)
         res.logger.info(f"Finished loading Trainset examples. Trainset size: {len(res)}")
         return res
@@ -81,6 +81,7 @@ class Trainset(Dataset):
         self.logger.info(f"Loading examples for dataset from {dataset_train_dir}")
         subfolders_paths = [os.path.join(dataset_train_dir, dirname) for dirname in os.listdir(dataset_train_dir)]
         examples_paths = [dirpath for dirpath in subfolders_paths if os.path.isdir(dirpath)]
+        examples_paths.sort()
         for example_path in examples_paths:
             self._load_persons_examples(example_path, limit_examples)
         self.logger.info(f"Finished loading examples for dataset from {dataset_train_dir}. "
