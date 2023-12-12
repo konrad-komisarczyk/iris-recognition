@@ -5,7 +5,7 @@ from typing import Any
 
 import numpy as np
 from PIL import Image
-from torch.utils.data import DataLoader, Dataset, SubsetRandomSampler
+from torch.utils.data import DataLoader, Dataset
 from torchvision import transforms
 
 from iris_recognition.tools.logger import get_logger
@@ -21,16 +21,14 @@ class Trainset(Dataset):
     """
     SEED = 213
 
-    def __init__(self, transform: transforms.Compose | None, valid_size: float = 0.1, batch_size: int = 1) -> None:
+    def __init__(self, transform: transforms.Compose | None, valid_size: float = 0.1) -> None:
         """
         :param transform: transform function to be applied to images, or None if no transform should be applied
         :param valid_size: fraction of validation set, default 0.3
-        :param batch_size: batch size, default 1
         """
         np.random.seed(Trainset.SEED)
         self.transform = transform
         self.valid_size = valid_size
-        self.batch_size = batch_size
         self.image_paths: list[str] = []
         self.labels: list[int] = []
 
@@ -55,24 +53,12 @@ class Trainset(Dataset):
 
         return image, label
 
-    def train_len(self) -> int:
-        return len(self) - self.valid_len()
-
-    def valid_len(self) -> int:
-        return int(np.floor(self.valid_size * len(self)))
-
-    def get_dataloaders(self) -> tuple[DataLoader, DataLoader]:
+    def get_dataloader(self, batch_size: int = 1) -> DataLoader:
         """
-        :return: tuple[Train DataLoader, Validation Dataloader]
+        :return: DataLoader
+        :param batch_size: batch size, default 1
         """
-        indices = list(range(len(self)))
-        np.random.shuffle(indices)
-        train_idx, valid_idx = indices[self.valid_len():], indices[:self.valid_len()]
-        train_sampler = SubsetRandomSampler(train_idx)
-        valid_sampler = SubsetRandomSampler(valid_idx)
-        train_loader = DataLoader(self, batch_size=self.batch_size, sampler=train_sampler)
-        valid_loader = DataLoader(self, batch_size=self.batch_size, sampler=valid_sampler)
-        return train_loader, valid_loader
+        return DataLoader(self, batch_size=batch_size)
 
     @staticmethod
     def load_dataset(dataset_names: list[str], transform: Any, limit_examples: int | None = None) -> Trainset:

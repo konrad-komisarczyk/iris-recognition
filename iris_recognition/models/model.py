@@ -27,6 +27,7 @@ class TrainingParams:
     num_epochs: int
     learning_rate: float
     weight_decay: float
+    batch_size: int
 
 
 class Model(abc.ABC):
@@ -122,18 +123,20 @@ class Model(abc.ABC):
         val_acc = running_corrects / num_batches
         return val_loss, val_acc
 
-    def train(self, trainset: Trainset, params: TrainingParams) -> None:
+    def train(self, trainset: Trainset, valset: Trainset | None, params: TrainingParams) -> None:
         """
         Train model
-        :param trainset: Trainset object
+        :param trainset: Trainset object for training set
+        :param valset: optional Trainset object for validation set
         :param params: TrainingParams object
         """
         if self.model is None:
             raise ValueError("Model is not initialized properly")
 
         self.logger.info(f"Starting training model {self.name}")
-        self.logger.info(f"Training set len: {trainset.train_len()}, Validation set len: {trainset.valid_len()}")
-        train_loader, val_loader = trainset.get_dataloaders()
+        self.logger.info(f"Training set len: {len(trainset)}, Validation set len: {len(valset) if valset else 0}")
+        train_loader = trainset.get_dataloader(batch_size=params.batch_size)
+        val_loader = valset.get_dataloader(batch_size=params.batch_size) if valset else None
 
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.logger.info(f"Device that will be used: {device}")
@@ -144,11 +147,15 @@ class Model(abc.ABC):
 
         for epoch in range(params.num_epochs):
             train_loss, train_acc = self._train_epoch(device, train_loader, optimizer, criterion)
-            val_loss, val_acc = self._eval_epoch(device, val_loader, criterion)
+            train_metrics_str = f"train loss: {train_loss:.4f}, train acc: {train_acc:.4f}"
+
+            val_metrics_str = ""
+            if valset:
+                val_loss, val_acc = self._eval_epoch(device, val_loader, criterion)
+                val_metrics_str = f"val loss: {val_loss:.4f}, val acc: {val_acc:.4f}"
 
             # Print the epoch results
-            self.logger.info(f'Epoch [{epoch + 1}/{params.num_epochs}], train loss: {train_loss:.4f}, '
-                             f'train acc: {train_acc:.4f}, val loss: {val_loss:.4f}, val acc: {val_acc:.4f}')
+            self.logger.info(f'Epoch [{epoch + 1}/{params.num_epochs}]: {train_metrics_str}; {val_metrics_str}')
 
     @staticmethod
     def get_transform() -> transforms.Compose:
