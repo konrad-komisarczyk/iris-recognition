@@ -55,9 +55,8 @@ for model_name, tag, node_name in MODELS_TAGS_NODES:
     between_label_similarities: dict[tuple[str, str], list[float]] = defaultdict(list)
     for (label1, label1_features), (label2, label2_features) in itertools.combinations(label_to_features.items(), 2):
         LOGGER.info(f"Calculating between-label similarities for labels {label1} - {label2}")
-        for features1 in label1_features:
-            for features2 in label2_features:
-                between_label_similarities[(label1, label2)].append(SIMILARITY_FUNC(features1, features2))
+        for features1, features2 in itertools.product(label1_features, label2_features):
+            between_label_similarities[(label1, label2)].append(SIMILARITY_FUNC(features1, features2))
         LOGGER.info(f"Similarities dist. for pair {label1} - {label2}: "
                     f"{similarities_distribution_info(between_label_similarities[(label1, label2)])}")
     all_between_label_similarities = list(itertools.chain.from_iterable(between_label_similarities.values()))

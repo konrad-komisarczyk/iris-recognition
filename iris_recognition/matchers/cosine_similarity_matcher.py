@@ -13,6 +13,10 @@ class CosineSimilarityMatcher(Matcher):
     def __init__(self, threshold: float) -> None:
         self.threshold = threshold
 
+    @property
+    def name(self) -> str:
+        return f"CosineSimilarityMatcher(threshold={self.threshold})"
+
     @staticmethod
     def similarity(features_1: ExtractedFeatures, features_2: ExtractedFeatures) -> float:
         return float(CosineSimilarityMatcher.COSSIM(features_1.flatten(), features_2.flatten()))

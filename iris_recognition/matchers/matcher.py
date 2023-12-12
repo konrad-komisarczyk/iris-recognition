@@ -7,6 +7,12 @@ class Matcher(abc.ABC):
     """
     Class representing matcher. Used to match extracted features.
     """
+    @property
+    @abc.abstractmethod
+    def name(self) -> str:
+        """
+        :return: name of the matcher
+        """
 
     @abc.abstractmethod
     def match(self, features_1: ExtractedFeatures, features_2: ExtractedFeatures) -> bool:
