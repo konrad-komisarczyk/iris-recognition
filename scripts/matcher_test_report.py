@@ -39,11 +39,8 @@ for matcher in MATCHERS:
             if len(features_list) > 1:
                 for features1, features2 in itertools.combinations(features_list, 2):
                     is_matched = matcher.match(features1, features2)
-                    print(is_matched)
                     label_tps[label] += is_matched
-                    print(label_tps[label])
                     label_fns[label] += not is_matched
-                    print(label_fns[label])
                 label_recall[label] = label_tps[label] / (label_tps[label] + label_fns[label])
                 LOGGER.info(f"Recall for label {label} = {label_recall[label]}")
         total_tps = sum(label_tps.values())
