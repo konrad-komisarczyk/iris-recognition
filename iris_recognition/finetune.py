@@ -51,8 +51,7 @@ def finetune(parsed_args: argparse.Namespace) -> None:
     valset = Trainset.load_dataset(parsed_args.validation_datasets, transform, parsed_args.trainset_len_limit) \
         if parsed_args.validation_datasets else None
     model.prepare_pretrained(trainset.num_classes())
-    model.train(trainset, valset, training_params)
-    model.save(parsed_args.tag)
+    model.train(trainset, valset, training_params, tag_to_save=parsed_args.tag)
 
     model.log_node_names()
 

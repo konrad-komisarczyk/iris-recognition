@@ -123,12 +123,14 @@ class Model(abc.ABC):
         val_acc = running_corrects / num_batches
         return val_loss, val_acc
 
-    def train(self, trainset: Trainset, valset: Trainset | None, params: TrainingParams) -> None:
+    def train(self, trainset: Trainset, valset: Trainset | None, params: TrainingParams,
+              tag_to_save: str | None = None) -> None:
         """
         Train model
         :param trainset: Trainset object for training set
         :param valset: optional Trainset object for validation set
         :param params: TrainingParams object
+        :param tag_to_save: training tag to save under after each epoch if not None, if None then will not save
         """
         if self.model is None:
             raise ValueError("Model is not initialized properly")
@@ -156,6 +158,10 @@ class Model(abc.ABC):
 
             # Print the epoch results
             self.logger.info(f'Epoch [{epoch + 1}/{params.num_epochs}]: {train_metrics_str}; {val_metrics_str}')
+
+            if tag_to_save:
+                self.logger.info(f"Saving under tag {tag_to_save}.")
+                self.save(tag_to_save)
 
     @staticmethod
     def get_transform() -> transforms.Compose:
