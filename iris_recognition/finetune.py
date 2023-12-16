@@ -30,9 +30,9 @@ def get_parser() -> argparse.ArgumentParser:
                         help="Number of epochs, default is 1")
     parser.add_argument("--batch_size", type=int, default=1,
                         help="Training batch size, default is 1")
-    parser.add_argument("--learning_rate", type=int, default=0.001,
+    parser.add_argument("--learning_rate", type=float, default=0.001,
                         help="Learning rate training param")
-    parser.add_argument("--weight_decay", type=int, default=0.0001,
+    parser.add_argument("--weight_decay", type=float, default=0.0001,
                         help="Weight decay training param")
     parser.add_argument("--tag", type=str, required=True,
                         help="Training tag, example: date")

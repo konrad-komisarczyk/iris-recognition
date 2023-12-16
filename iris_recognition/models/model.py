@@ -162,6 +162,8 @@ class Model(abc.ABC):
             if tag_to_save:
                 self.logger.info(f"Saving under tag {tag_to_save}.")
                 self.save(tag_to_save)
+                metric_to_save = {"epoch": (epoch + 1), "train loss": f"{train_loss:.4f}", "train acc": f"{train_acc:.4f}", "val loss": f"{val_loss:.4f}", "val acc": f"{val_acc:.4f}"}
+                self.append_metrics(tag_to_save, metric_to_save)
 
     @staticmethod
     def get_transform() -> transforms.Compose:
@@ -184,6 +186,24 @@ class Model(abc.ABC):
         os.makedirs(pathlib.Path(model_path).parent, exist_ok=True)
         self.logger.info(f"Saving model to path {model_path}")
         torch.save(self.model, model_path)
+    
+    def append_metrics(self, tag: str, epoch_metrics: dict) -> None:
+        """
+        Appends metrics to a file after each epoch.
+        :param tag: training tag
+        :param epoch_metrics: dictionary containing the metrics for the current epoch
+        """
+        # Determine the path for saving metrics
+        metrics_path = self.path_organizer.get_finetuned_model_path(self.name, tag)
+        metrics_path = pathlib.Path(metrics_path).with_name(f"{tag}_metrics.txt")
+
+        # Ensure the directory exists
+        os.makedirs(metrics_path.parent, exist_ok=True)
+
+        # Append the metrics to the file
+        self.logger.info(f"Appending metrics to path {metrics_path}")
+        with open(metrics_path, 'a') as file:
+            file.write(str(epoch_metrics) + '\n')
 
     def load_finetuned(self, tag: str) -> None:
         """
