@@ -62,6 +62,7 @@ class Model(abc.ABC):
         running_loss = 0.0
         running_corrects = 0
         n_batches = 0
+        total_samples = 0
 
         # Iterate over the batches of the train loader
         for inputs, labels in train_loader:
@@ -85,10 +86,11 @@ class Model(abc.ABC):
             running_loss += loss.item() * inputs.size(0)
             running_corrects += torch.sum(preds == labels.data)
             n_batches += 1
+            total_samples += inputs.size(0)
 
         # Calculate the train loss and accuracy
-        train_loss = running_loss / n_batches
-        train_acc = running_corrects / n_batches
+        train_loss = running_loss / total_samples  # total loss divided by total number of samples
+        train_acc = running_corrects.double() / total_samples
 
         return train_loss, train_acc
 
@@ -100,6 +102,7 @@ class Model(abc.ABC):
         running_loss = 0.0
         running_corrects = 0
         num_batches = 0
+        total_samples = 0
 
         # Iterate over the batches of the validation loader
         with torch.no_grad():
@@ -117,10 +120,11 @@ class Model(abc.ABC):
                 running_loss += loss.item() * inputs.size(0)
                 running_corrects += torch.sum(preds == labels.data)
                 num_batches += 1
+                total_samples += inputs.size(0)
 
         # Calculate the validation loss and accuracy
-        val_loss = running_loss / num_batches
-        val_acc = running_corrects / num_batches
+        val_loss = running_loss / total_samples
+        val_acc = running_corrects / total_samples
         return val_loss, val_acc
 
     def train(self, trainset: Trainset, valset: Trainset | None, params: TrainingParams,
@@ -160,10 +164,13 @@ class Model(abc.ABC):
             self.logger.info(f'Epoch [{epoch + 1}/{params.num_epochs}]: {train_metrics_str}; {val_metrics_str}')
 
             if tag_to_save:
-                self.logger.info(f"Saving under tag {tag_to_save}.")
-                self.save(tag_to_save)
                 metric_to_save = {"epoch": (epoch + 1), "train loss": f"{train_loss:.4f}", "train acc": f"{train_acc:.4f}", "val loss": f"{val_loss:.4f}", "val acc": f"{val_acc:.4f}"}
                 self.append_metrics(tag_to_save, metric_to_save)
+                # if (epoch+1)%20 == 0:
+                self.logger.info(f"Saving under tag {tag_to_save}.")
+                self.save(tag_to_save)
+        # self.logger.info(f"Saving under tag {tag_to_save}.")
+        # self.save(tag_to_save)
 
     @staticmethod
     def get_transform() -> transforms.Compose:
