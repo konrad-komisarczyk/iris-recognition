@@ -154,17 +154,20 @@ class Model(abc.ABC):
         for epoch in range(params.num_epochs):
             train_loss, train_acc = self._train_epoch(device, train_loader, optimizer, criterion)
             train_metrics_str = f"train loss: {train_loss:.4f}, train acc: {train_acc:.4f}"
+            metric_to_save = {
+                "epoch": epoch + 1, "train loss": f"{train_loss:.4f}", "train acc": f"{train_acc:.4f}",
+            }
 
             val_metrics_str = ""
             if valset:
                 val_loss, val_acc = self._eval_epoch(device, val_loader, criterion)
                 val_metrics_str = f"val loss: {val_loss:.4f}, val acc: {val_acc:.4f}"
+                metric_to_save.update({"val loss": f"{val_loss:.4f}", "val acc": f"{val_acc:.4f}"})
 
             # Print the epoch results
             self.logger.info(f'Epoch [{epoch + 1}/{params.num_epochs}]: {train_metrics_str}; {val_metrics_str}')
 
             if tag_to_save:
-                metric_to_save = {"epoch": (epoch + 1), "train loss": f"{train_loss:.4f}", "train acc": f"{train_acc:.4f}", "val loss": f"{val_loss:.4f}", "val acc": f"{val_acc:.4f}"}
                 self.append_metrics(tag_to_save, metric_to_save)
                 # if (epoch+1)%20 == 0:
                 self.logger.info(f"Saving under tag {tag_to_save}.")

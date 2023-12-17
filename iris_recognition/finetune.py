@@ -24,6 +24,8 @@ def get_parser() -> argparse.ArgumentParser:
                         choices=AVAILABLE_DATASETS,
                         help=f"Optional, names of the sets to include to validation set, "
                              f"choose from {AVAILABLE_DATASETS}")
+    parser.add_argument("--example_names_to_keep", type=str, required=False, nargs="+",
+                        help=f"Optional, names of the examples to include in both sets.")
     parser.add_argument("--trainset_len_limit", type=int, required=False,
                         help="Optional limit to trainset len")
     parser.add_argument("--num_epochs", type=int, default=1,
@@ -47,8 +49,10 @@ def finetune(parsed_args: argparse.Namespace) -> None:
                                      weight_decay=parsed_args.weight_decay, batch_size=parsed_args.batch_size)
     model = get_model_by_name(parsed_args.model)
     transform = model.get_transform()
-    trainset = Trainset.load_dataset(parsed_args.training_datasets, transform, parsed_args.trainset_len_limit)
-    valset = Trainset.load_dataset(parsed_args.validation_datasets, transform, parsed_args.trainset_len_limit) \
+    trainset = Trainset.load_dataset(parsed_args.training_datasets, transform, parsed_args.trainset_len_limit,
+                                     set(parsed_args.example_names_to_keep))
+    valset = Trainset.load_dataset(parsed_args.validation_datasets, transform, parsed_args.trainset_len_limit,
+                                   set(parsed_args.example_names_to_keep)) \
         if parsed_args.validation_datasets else None
     model.prepare_pretrained(trainset.num_classes())
     model.train(trainset, valset, training_params, tag_to_save=parsed_args.tag)
