@@ -11,7 +11,9 @@
                 {{ form.iris_image|as_crispy_field }}
                 {% if login_error == True %}
                 <div class="alert alert-danger mt-2 mb-1" role="alert">
-                    Weryfikacja tożsamości nie przebiegła pomyślnie.
+                    Weryfikacja tożsamości nie przebiegła pomyślnie. <br>
+                    Upewnij się, że tęczówka jest dobrze widoczna na zdjęciu <br>
+                    oraz, że nazwa użytkownika jest poprawna.
                 </div>
                 {% endif %}
                 {% if user_exists == False %}

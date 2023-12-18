@@ -13,9 +13,6 @@ class IrisBackend(BaseBackend):
                 return user
         except User.DoesNotExist:
             return None
-        except Exception as e:
-            print(e)
-            traceback.print_exc()
 
     def get_user(self, user_id):
         try:

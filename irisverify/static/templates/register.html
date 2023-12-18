@@ -9,6 +9,12 @@
                 {% csrf_token %}
                 {{ form.username|as_crispy_field }}
                 {{ form.iris_image|as_crispy_field }}
+                {% if extraction_error == True %}
+                <div class="alert alert-danger mt-2 mb-1" role="alert">
+                    Wystąpił błąd podczas procesowania zdjęcia. <br>
+                    Upewnij się że tęczówka jest na nim widoczna.
+                </div>
+                {% endif %}
                 {% if username_taken == True %}
                 <div class="alert alert-danger mt-2 mb-1" role="alert">
                     Wybrana nazwa użytkownika jest zajęta
