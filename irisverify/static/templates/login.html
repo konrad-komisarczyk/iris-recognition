@@ -1,11 +1,11 @@
 {% extends 'index.html' %}
 
 {% block content %}
-    {% load crispy_forms_tags %}
+{% load crispy_forms_tags %}
     <div class="container">
         <h3 class="py-3">Strona logowania</h3>
         <div class="d-flex justify-content-center">
-            <form method="POST" enctype="multipart/form-data">
+            <form method="POST" enctype="multipart/form-data" onsubmit="ShowLoaderLogin();">
                 {% csrf_token %}
                 {{ form.username|as_crispy_field }}
                 {{ form.iris_image|as_crispy_field }}

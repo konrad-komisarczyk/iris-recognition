@@ -5,7 +5,7 @@
     <div class="container">
         <h3 class="py-3">Strona rejestracji</h3>
         <div class="d-flex justify-content-center">
-            <form method="POST" class="registration_form" enctype="multipart/form-data">
+            <form method="POST" class="registration_form" enctype="multipart/form-data" onsubmit="ShowLoaderRegister();">
                 {% csrf_token %}
                 {{ form.username|as_crispy_field }}
                 {{ form.iris_image|as_crispy_field }}
@@ -25,6 +25,9 @@
                 </div>
                 <div class="py-2 h5">Rejestracja nie wiąże się z zapisem zdjęcia!</div>
             </form>
+        <div class="d-flex justify-content-center">
+            <a role="button" href="{% url 'login_view' %}" class="btn btn-outline-primary">Powrót do logowania</a>
+        </div>
         </div>
     </div>
 {% endblock %}
