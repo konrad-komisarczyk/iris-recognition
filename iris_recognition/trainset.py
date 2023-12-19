@@ -12,7 +12,8 @@ from iris_recognition.tools.logger import get_logger
 from iris_recognition.tools.path_organizer import PathOrganizer
 
 
-AVAILABLE_DATASETS = ["miche", "mmu", "ubiris", "all_filtered_train", "all_filtered_val"]
+AVAILABLE_DATASETS = ["miche", "mmu", "ubiris", "all_filtered_train", "all_filtered_val", "mmu_filtered_train",
+                      "mmu_filtered_val"]
 
 
 class Trainset(Dataset):
@@ -61,11 +62,13 @@ class Trainset(Dataset):
         return DataLoader(self, batch_size=batch_size)
 
     @staticmethod
-    def load_dataset(dataset_names: list[str], transform: Any, limit_examples: int | None = None) -> Trainset:
+    def load_dataset(dataset_names: list[str], transform: Any, limit_examples: int | None = None,
+                     example_names_to_keep: set[str] | None = None) -> Trainset:
         """
         :param dataset_names: list of names of datasets to load from
         :param transform: transform function that will be applied to images
         :param limit_examples: optional total examples limit
+        :param example_names_to_keep: if not None, then load only examples with given names
         :return: Trainset with examples from all given datasets
         """
         path_organizer = PathOrganizer()
@@ -73,13 +76,18 @@ class Trainset(Dataset):
         res.logger.info(f"Loading Trainset examples...")
         for dataset_name in dataset_names:
             dataset_train_dir = path_organizer.get_dataset_preprocessed(dataset_name)
-            res._load_examples_from_dir(dataset_train_dir, limit_examples)
+            res._load_examples_from_dir(dataset_train_dir, limit_examples, example_names_to_keep)
         res.logger.info(f"Finished loading Trainset examples. Trainset size: {len(res)}")
         return res
 
-    def _load_examples_from_dir(self, dataset_train_dir: str, limit_examples: int | None = None) -> None:
+    def _load_examples_from_dir(self, dataset_train_dir: str, limit_examples: int | None = None,
+                                example_names_to_keep: set[str] | None = None) -> None:
         self.logger.info(f"Loading examples for dataset from {dataset_train_dir}")
-        subfolders_paths = [os.path.join(dataset_train_dir, dirname) for dirname in os.listdir(dataset_train_dir)]
+        subfolder_names = os.listdir(dataset_train_dir)
+        if example_names_to_keep is not None:
+            subfolder_names = example_names_to_keep.intersection(subfolder_names)
+            self.logger.info(f"Limiting examples to {subfolder_names}")
+        subfolders_paths = [os.path.join(dataset_train_dir, dirname) for dirname in subfolder_names]
         examples_paths = [dirpath for dirpath in subfolders_paths if os.path.isdir(dirpath)]
         examples_paths.sort()
         for example_path in examples_paths:

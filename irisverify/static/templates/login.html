@@ -1,17 +1,19 @@
 {% extends 'index.html' %}
 
 {% block content %}
-    {% load crispy_forms_tags %}
+{% load crispy_forms_tags %}
     <div class="container">
         <h3 class="py-3">Strona logowania</h3>
         <div class="d-flex justify-content-center">
-            <form method="POST" enctype="multipart/form-data">
+            <form method="POST" enctype="multipart/form-data" onsubmit="ShowLoaderLogin();">
                 {% csrf_token %}
                 {{ form.username|as_crispy_field }}
                 {{ form.iris_image|as_crispy_field }}
                 {% if login_error == True %}
                 <div class="alert alert-danger mt-2 mb-1" role="alert">
-                    Weryfikacja tożsamości nie przebiegła pomyślnie.
+                    Weryfikacja tożsamości nie przebiegła pomyślnie. <br>
+                    Upewnij się, że tęczówka jest dobrze widoczna na zdjęciu <br>
+                    oraz, że nazwa użytkownika jest poprawna.
                 </div>
                 {% endif %}
                 {% if user_exists == False %}

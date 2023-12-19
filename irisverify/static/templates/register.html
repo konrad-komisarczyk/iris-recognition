@@ -5,10 +5,16 @@
     <div class="container">
         <h3 class="py-3">Strona rejestracji</h3>
         <div class="d-flex justify-content-center">
-            <form method="POST" class="registration_form" enctype="multipart/form-data">
+            <form method="POST" class="registration_form" enctype="multipart/form-data" onsubmit="ShowLoaderRegister();">
                 {% csrf_token %}
                 {{ form.username|as_crispy_field }}
                 {{ form.iris_image|as_crispy_field }}
+                {% if extraction_error == True %}
+                <div class="alert alert-danger mt-2 mb-1" role="alert">
+                    Wystąpił błąd podczas procesowania zdjęcia. <br>
+                    Upewnij się że tęczówka jest na nim widoczna.
+                </div>
+                {% endif %}
                 {% if username_taken == True %}
                 <div class="alert alert-danger mt-2 mb-1" role="alert">
                     Wybrana nazwa użytkownika jest zajęta
@@ -19,6 +25,9 @@
                 </div>
                 <div class="py-2 h5">Rejestracja nie wiąże się z zapisem zdjęcia!</div>
             </form>
+        <div class="d-flex justify-content-center">
+            <a role="button" href="{% url 'login_view' %}" class="btn btn-outline-primary">Powrót do logowania</a>
+        </div>
         </div>
     </div>
 {% endblock %}

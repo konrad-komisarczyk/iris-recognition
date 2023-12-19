@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import torch
+from torch import nn
 from torchvision.models import vgg16
 
 from iris_recognition.models.model import Model
@@ -18,5 +18,19 @@ class Vgg(Model):
     def prepare_pretrained(self, num_classes: int) -> None:
         self.logger.debug("Loading model")
         self.model = vgg16(weights='DEFAULT')
-        self.model.classifier[6] = torch.nn.Linear(self.model.classifier[6].in_features, num_classes)
+
+        # Freeze all the layers
+        for param in self.model.parameters():
+            param.requires_grad = False
+
+        self.model.classifier = nn.Sequential(
+            nn.Linear(512 * 7 * 7, 4096),
+            nn.ReLU(True),
+            nn.Dropout(p=0.5),
+            nn.Linear(4096, 4096),
+            nn.ReLU(True),
+            nn.Dropout(p=0.5),
+            nn.Linear(4096, num_classes),
+        )
+
         self.logger.debug("Done loading model and preparing classification layer")

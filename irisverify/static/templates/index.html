@@ -12,6 +12,17 @@
     <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css"></head>
     <link rel="stylesheet" href="{% static 'css/custom_styles.css' %}">
 <body>
+<div id="black-overlay">
+        <div id="overlay-content">
+            <div class="d-flex justify-content-center">
+              <div class="spinner-border" role="status">
+              </div>
+            </div>
+            <div class="msg">
+               <p id="loader-message"></p>
+           </div>
+        </div>
+</div>
 {% include "nav.html" %}
 {% if not request.user.is_authenticated and request.get_full_path == "/" %}
     <div class="container py-3">
@@ -37,9 +48,10 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
+<script src="{% static 'js/loader_functions.js' %}"></script>
 <footer>
     <div class="footer-copyright text-center py-3">© 2023 Copyright:
-        <a href="https://github.com/sokolowskij"> Jędrzej Sokołowski</a>,<a href="https://github.com/konrad-komisarczyk">Konrad Komisarczyk</a>,<a href="https://github.com/HKozubek">Hubert Kozubek</a>
+        <a href="https://github.com/sokolowskij"> Jędrzej Sokołowski</a>, <a href="https://github.com/konrad-komisarczyk">Konrad Komisarczyk</a>, <a href="https://github.com/HKozubek">Hubert Kozubek</a>
     </div>
 </footer>
 </body>
