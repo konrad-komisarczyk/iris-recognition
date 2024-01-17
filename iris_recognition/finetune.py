@@ -49,10 +49,11 @@ def finetune(parsed_args: argparse.Namespace) -> None:
                                      weight_decay=parsed_args.weight_decay, batch_size=parsed_args.batch_size)
     model = get_model_by_name(parsed_args.model)
     transform = model.get_transform()
+    examples_to_keep = set(parsed_args.example_names_to_keep) if parsed_args.example_names_to_keep else None
     trainset = Trainset.load_dataset(parsed_args.training_datasets, transform, parsed_args.trainset_len_limit,
-                                     set(parsed_args.example_names_to_keep))
+                                     examples_to_keep)
     valset = Trainset.load_dataset(parsed_args.validation_datasets, transform, parsed_args.trainset_len_limit,
-                                   set(parsed_args.example_names_to_keep)) \
+                                   examples_to_keep) \
         if parsed_args.validation_datasets else None
     model.prepare_pretrained(trainset.num_classes())
     model.train(trainset, valset, training_params, tag_to_save=parsed_args.tag)
