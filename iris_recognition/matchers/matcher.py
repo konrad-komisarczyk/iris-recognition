@@ -1,6 +1,10 @@
 import abc
+from typing import Callable
 
 from iris_recognition.extracted_features import ExtractedFeatures
+
+
+MATCHER_SIMILARITY_FUNCTION = Callable[[ExtractedFeatures, ExtractedFeatures], float]
 
 
 class Matcher(abc.ABC):
