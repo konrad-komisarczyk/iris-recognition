@@ -221,7 +221,7 @@ class Model(abc.ABC):
         :param tag: training tag
         """
         model_path = self.path_organizer.get_finetuned_model_path(self.name, tag)
-        self.model = torch.load(model_path)
+        self.model = torch.load(model_path, map_location=None if torch.cuda.is_available() else torch.device('cpu'))
 
     def log_node_names(self) -> None:
         train_nodes, eval_nodes = get_graph_node_names(self.model)

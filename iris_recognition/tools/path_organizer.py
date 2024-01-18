@@ -48,3 +48,11 @@ class PathOrganizer:
         :return: path to the finetuned model
         """
         return os.path.join(self.get_finetuned_model_dir(model_name, tag), self.get_finetuned_model_filename())
+
+    def get_finetuning_log_path(self, model_name: str, tag: str) -> str:
+        """
+        :param model_name: model name
+        :param tag: model's training tag
+        :return: path to the finetuned model logs file
+        """
+        return os.path.join(self.get_finetuned_model_dir(model_name, tag), "model.log")

@@ -10,11 +10,11 @@ from iris_recognition.models import get_model_by_name
 from iris_recognition.tools.logger import get_logger
 from iris_recognition.trainset import Trainset
 
-LIMIT_EXAMPLES = 200  # TODO: set to None later
+LIMIT_EXAMPLES = None  # TODO: set to None later
 
-MATCHERS: list[Matcher] = [CosineSimilarityMatcher(threshold=0.99)]
-TESTSET_NAMES = ["all_filtered_val"]
-MODELS_TAGS_NODES = [("AlexNet", "test0", "features.12")]
+MATCHERS: list[Matcher] = [CosineSimilarityMatcher(threshold=0.3)]
+TESTSET_NAMES = ["umap_filtered_val"]
+MODELS_TAGS_NODES = [("AlexNet", "t1", "features.12")]
 
 LOGGER = get_logger("Matcher test report")
 
@@ -66,6 +66,7 @@ for matcher in MATCHERS:
         total_fps = sum(label_fps.values())
         total_FPR = total_fps / (total_fps + total_tns)
         LOGGER.info(f"Total False Positive Rate = {total_FPR}")
+        LOGGER.info(f"Total recall = {total_recall}")
 
         LOGGER.info(f"Confusion matrix: \n"
                     f"TPs = {total_tps}, FNs = {total_fns}, \n"
