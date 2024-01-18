@@ -18,7 +18,7 @@ from iris_recognition.tools.logger import get_logger
 from iris_recognition.tools.path_organizer import PathOrganizer
 from iris_recognition.trainset import Trainset
 
-MODELS_TAGS_NODES = [("AlexNet", "t6", "features.12")]
+MODELS_TAGS_NODES = [("AlexNet", "mmu2", "features.12")]
 DATASETS = ["umap_filtered_val"]
 TRAINSET_LEN_LIMIT = 100
 SIMILARITY_FUNC: MATCHER_SIMILARITY_FUNCTION = EuclideanDistanceMatcher.distance

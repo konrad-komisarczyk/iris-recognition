@@ -4,6 +4,7 @@ import abc
 import json
 import os
 import pathlib
+import re
 from abc import abstractmethod
 from dataclasses import dataclass
 from typing import Any
@@ -193,9 +194,7 @@ class Model(abc.ABC):
                 self.append_metrics(tag_to_save, metric_to_save)
                 # if (epoch+1)%20 == 0:
                 self.logger.info(f"Saving under tag {tag_to_save}.")
-                self.save(tag_to_save)
-        # self.logger.info(f"Saving under tag {tag_to_save}.")
-        # self.save(tag_to_save)
+                self.save(tag_to_save, epoch)
 
     @staticmethod
     def get_transform() -> transforms.Compose:
@@ -209,12 +208,13 @@ class Model(abc.ABC):
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
         ])
 
-    def save(self, tag: str) -> None:
+    def save(self, tag: str, epoch: int) -> None:
         """
         Saves finetuned model to use in the testing
         :param tag: training tag
+        :param epoch: epoch number
         """
-        model_path = self.path_organizer.get_finetuned_model_path(self.name, tag)
+        model_path = self.path_organizer.get_finetuned_model_path(self.name, tag, epoch)
         os.makedirs(pathlib.Path(model_path).parent, exist_ok=True)
         self.logger.info(f"Saving model to path {model_path}")
         torch.save(self.model, model_path)
@@ -225,24 +225,28 @@ class Model(abc.ABC):
         :param tag: training tag
         :param epoch_metrics: dictionary containing the metrics for the current epoch
         """
-        # Determine the path for saving metrics
-        metrics_path = self.path_organizer.get_finetuned_model_path(self.name, tag)
-        metrics_path = pathlib.Path(metrics_path).with_name(f"{tag}_metrics.txt")
-
-        # Ensure the directory exists
-        os.makedirs(metrics_path.parent, exist_ok=True)
-
-        # Append the metrics to the file
+        metrics_path = self.path_organizer.get_finetuned_model_metrics_path(self.name, tag)
         self.logger.info(f"Appending metrics to path {metrics_path}")
+        FsTools.ensure_dir(metrics_path)
         with open(metrics_path, 'a') as file:
             file.write(str(epoch_metrics) + '\n')
 
-    def load_finetuned(self, tag: str) -> None:
+    def load_finetuned(self, tag: str, epoch: int | None = None) -> None:
         """
         Loads finetuned model
         :param tag: training tag
+        :param epoch: epoch number or None, if None, last epoch will be loaded
         """
-        model_path = self.path_organizer.get_finetuned_model_path(self.name, tag)
+        if epoch is None:
+            model_dir = self.path_organizer.get_finetuned_model_dir(self.name, tag)
+            epochs = []
+            for filename in os.listdir(model_dir):
+                if match := re.match(r"epoch(\d+).pt", filename):
+                    epochs.append(int(match[1]))
+            if not epochs:
+                raise FileNotFoundError(f"No models saved in given tag dir: {model_dir}")
+            epoch = max(epochs)
+        model_path = self.path_organizer.get_finetuned_model_path(self.name, tag, epoch)
         self.model = torch.load(model_path, map_location=None if torch.cuda.is_available() else torch.device('cpu'))
 
     def log_node_names(self) -> None:
