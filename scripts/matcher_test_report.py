@@ -12,9 +12,9 @@ from iris_recognition.trainset import Trainset
 
 LIMIT_EXAMPLES = None  # TODO: set to None later
 
-MATCHERS: list[Matcher] = [CosineSimilarityMatcher(threshold=0.3)]
+MATCHERS: list[Matcher] = [CosineSimilarityMatcher(threshold=0.5)]
 TESTSET_NAMES = ["umap_filtered_val"]
-MODELS_TAGS_NODES = [("AlexNet", "t1", "features.12")]
+MODELS_TAGS_NODES = [("AlexNet", "t6", "features.12")]
 
 LOGGER = get_logger("Matcher test report")
 
@@ -73,3 +73,9 @@ for matcher in MATCHERS:
                     f"FPs = {total_fps}, TNs = {total_tns}")
         total_accuracy = (total_tps + total_tns) / (total_tps + total_tns + total_fps + total_fns)
         LOGGER.info(f"Total Accuracy = {total_accuracy}")
+        total_sensitivity = total_tps / (total_tps + total_fns)
+        LOGGER.info(f"Total Sensitivity = {total_sensitivity}")
+        total_specificity = total_tns / (total_tns + total_fps)
+        LOGGER.info(f"Total Specificy = {total_specificity}")
+        total_balanced_accuracy = (total_specificity + total_sensitivity) / 2
+        LOGGER.info(f"Total Balanced Accuracy = {total_balanced_accuracy}")

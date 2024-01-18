@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import itertools
 import os
 import pathlib
@@ -14,8 +16,8 @@ from iris_recognition.tools.logger import get_logger
 from iris_recognition.tools.path_organizer import PathOrganizer
 from iris_recognition.trainset import Trainset
 
-MODELS_TAGS_NODES = [("AlexNet", "t1", "features.12")]
-DATASETS = ["all_filtered_val"]
+MODELS_TAGS_NODES = [("AlexNet", "t6", "features.12")]
+DATASETS = ["umap_filtered_val"]
 TRAINSET_LEN_LIMIT = 100
 
 
@@ -38,6 +40,7 @@ for model_name, tag, node_name in MODELS_TAGS_NODES:
     trainset = Trainset.load_dataset(DATASETS, None, TRAINSET_LEN_LIMIT)
 
     label_to_features: dict[str, list[ExtractedFeatures]] = defaultdict(list)
+    features: ExtractedFeatures | None = None
     for i in range(len(trainset)):
         image, label = trainset[i]
         LOGGER.info(f"Extracting features from image {i} with label {label}.")
