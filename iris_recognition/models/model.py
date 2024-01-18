@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import abc
+import json
 import os
 import pathlib
 from abc import abstractmethod
 from dataclasses import dataclass
+from typing import Any
 
 import torch
 from torchvision import transforms
@@ -13,6 +15,7 @@ from torchvision.models.feature_extraction import create_feature_extractor
 from PIL.Image import Image
 
 from iris_recognition.extracted_features import ExtractedFeatures
+from iris_recognition.tools.fs_tools import FsTools
 from iris_recognition.tools.logger import get_logger
 from iris_recognition.tools.path_organizer import PathOrganizer
 from iris_recognition.trainset import Trainset
@@ -28,6 +31,25 @@ class TrainingParams:
     learning_rate: float
     weight_decay: float
     batch_size: int
+
+    def log_params(self, path_to: str) -> None:
+        """
+        :param path_to: path to save params
+        """
+        FsTools.ensure_dir(path_to)
+        with open(path_to, mode="w", encoding="utf-8") as f:
+            json.dump(self.to_dict(), f, indent=2)
+
+    def to_dict(self) -> dict[str, Any]:
+        """
+        :return: dict representation
+        """
+        return {
+            "num_epochs": self.num_epochs,
+            "learning_rate": self.learning_rate,
+            "weight_decay": self.weight_decay,
+            "batch_size": self.batch_size
+        }
 
 
 class Model(abc.ABC):

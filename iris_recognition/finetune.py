@@ -51,6 +51,8 @@ def finetune(parsed_args: argparse.Namespace) -> None:
     model = get_model_by_name(parsed_args.model)
     add_file_handler(model.logger, PathOrganizer().get_finetuning_log_path(model.name, parsed_args.tag))
 
+    training_params.log_params(PathOrganizer().get_finetuning_params_dump_path(model.name, parsed_args.tag))
+
     transform = model.get_transform()
     examples_to_keep = set(parsed_args.example_names_to_keep) if parsed_args.example_names_to_keep else None
     trainset = Trainset.load_dataset(parsed_args.training_datasets, transform, parsed_args.trainset_len_limit,
