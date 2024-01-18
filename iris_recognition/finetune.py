@@ -8,7 +8,7 @@ from iris_recognition.models import model_name_to_class, get_model_by_name
 from iris_recognition.models.model import TrainingParams
 from iris_recognition.tools.logger import set_loggers_stderr_verbosity, add_file_handler
 from iris_recognition.tools.path_organizer import PathOrganizer
-from iris_recognition.trainset import AVAILABLE_DATASETS, Trainset
+from iris_recognition.trainset import Trainset
 
 
 def get_parser() -> argparse.ArgumentParser:
@@ -19,12 +19,9 @@ def get_parser() -> argparse.ArgumentParser:
     parser.add_argument("--model", type=str, required=True, choices=list(model_name_to_class.keys()),
                         help=f"Name of the model to train, choose one of {list(model_name_to_class.keys())}")
     parser.add_argument("--training_datasets", type=str, required=True, nargs="+",
-                        choices=AVAILABLE_DATASETS,
-                        help=f"Names of the sets to include to training set, choose from {AVAILABLE_DATASETS}")
+                        help=f"Names of the sets to include to training set")
     parser.add_argument("--validation_datasets", type=str, required=False, nargs="+",
-                        choices=AVAILABLE_DATASETS,
-                        help=f"Optional, names of the sets to include to validation set, "
-                             f"choose from {AVAILABLE_DATASETS}")
+                        help=f"Optional, names of the sets to include to validation set")
     parser.add_argument("--example_names_to_keep", type=str, required=False, nargs="+",
                         help=f"Optional, names of the examples to include in both sets.")
     parser.add_argument("--trainset_len_limit", type=int, required=False,
