@@ -22,3 +22,12 @@ class FsTools:
         :param path: path to file
         """
         FsTools.mkdir(pathlib.Path(path).parent)
+
+    @staticmethod
+    def rm_file(path: str) -> None:
+        """
+        Removes file
+        :param path: path to file
+        """
+        if os.path.isfile(path):
+            os.remove(path)

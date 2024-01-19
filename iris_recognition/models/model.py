@@ -192,9 +192,8 @@ class Model(abc.ABC):
 
             if tag_to_save:
                 self.append_metrics(tag_to_save, metric_to_save)
-                # if (epoch+1)%20 == 0:
-                self.logger.info(f"Saving under tag {tag_to_save}.")
-                self.save(tag_to_save, epoch)
+                #self.logger.info(f"Saving under tag {tag_to_save}.")
+                self.save(tag_to_save, epoch, remove_previous_epoch=(epoch % 100 != 0))
 
     @staticmethod
     def get_transform() -> transforms.Compose:
@@ -208,16 +207,20 @@ class Model(abc.ABC):
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
         ])
 
-    def save(self, tag: str, epoch: int) -> None:
+    def save(self, tag: str, epoch: int, remove_previous_epoch: bool = True) -> None:
         """
         Saves finetuned model to use in the testing
         :param tag: training tag
         :param epoch: epoch number
+        :param remove_previous_epoch: whether to remove previous epoch model
         """
         model_path = self.path_organizer.get_finetuned_model_path(self.name, tag, epoch)
         os.makedirs(pathlib.Path(model_path).parent, exist_ok=True)
         self.logger.info(f"Saving model to path {model_path}")
         torch.save(self.model, model_path)
+        if remove_previous_epoch and epoch:
+            previous_model_path = self.path_organizer.get_finetuned_model_path(self.name, tag, epoch)
+            FsTools.rm_file(previous_model_path)
     
     def append_metrics(self, tag: str, epoch_metrics: dict) -> None:
         """
