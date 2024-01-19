@@ -18,6 +18,14 @@ class Alexnet(Model):
     def prepare_pretrained(self, num_classes: int) -> None:
         self.logger.debug("Loading model")
         self.model = alexnet(weights='DEFAULT')
-        # in the original model classifier had more layers - is replacing it with 1 layer a good idea?
-        self.model.classifier = nn.Linear(256 * 6 * 6, num_classes)
+        num_ftrs = self.model.classifier[1].in_features
+        self.model.fc = nn.Sequential(
+            nn.Linear(num_ftrs, 1024),
+            nn.ReLU(),
+            nn.Dropout(0.4),
+            nn.Linear(1024, 512),
+            nn.ReLU(),
+            nn.Dropout(0.2),
+            nn.Linear(512, num_classes)  # Final layer for num_classes classes
+        )
         self.logger.debug("Done loading model and preparing classification layer")
