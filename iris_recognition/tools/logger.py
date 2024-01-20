@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 
+from iris_recognition.tools.fs_tools import FsTools
 
 STDERR_VERBOSITY = logging.INFO
 
@@ -33,6 +34,7 @@ def add_file_handler(logger: logging.Logger, filepath: str, verbosity: str | int
     :param filepath: path to file to save log
     :param verbosity: verbosity of the handler
     """
+    FsTools.ensure_dir(filepath)
     handler = logging.FileHandler(filepath)
     handler.setLevel(verbosity)
     logger.addHandler(handler)

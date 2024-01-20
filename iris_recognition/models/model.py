@@ -1,10 +1,14 @@
 from __future__ import annotations
 
 import abc
+import json
 import os
 import pathlib
+import re
 from abc import abstractmethod
 from dataclasses import dataclass
+from typing import Any
+from collections import Counter
 
 import torch
 from torchvision import transforms
@@ -13,9 +17,10 @@ from torchvision.models.feature_extraction import create_feature_extractor
 from PIL.Image import Image
 
 from iris_recognition.extracted_features import ExtractedFeatures
+from iris_recognition.tools.fs_tools import FsTools
 from iris_recognition.tools.logger import get_logger
 from iris_recognition.tools.path_organizer import PathOrganizer
-from iris_recognition.trainset import Trainset
+from iris_recognition.irisdataset import IrisDataset
 from iris_recognition.transforms.horizontal_stack import HorizontalStack
 import torchvision.transforms.functional as TF
 
@@ -75,6 +80,25 @@ class TrainingParams:
     learning_rate: float
     weight_decay: float
     batch_size: int
+
+    def log_params(self, path_to: str) -> None:
+        """
+        :param path_to: path to save params
+        """
+        FsTools.ensure_dir(path_to)
+        with open(path_to, mode="w", encoding="utf-8") as f:
+            json.dump(self.to_dict(), f, indent=2)
+
+    def to_dict(self) -> dict[str, Any]:
+        """
+        :return: dict representation
+        """
+        return {
+            "num_epochs": self.num_epochs,
+            "learning_rate": self.learning_rate,
+            "weight_decay": self.weight_decay,
+            "batch_size": self.batch_size
+        }
 
 
 class Model(abc.ABC):
@@ -169,12 +193,22 @@ class Model(abc.ABC):
                 num_batches += 1
                 total_samples += inputs.size(0)
 
+                labels_list = labels.data.flatten().tolist()
+                preds_list = preds.data.flatten().tolist()
+                missmatches = [(a, b) for (a, b) in zip(labels_list, preds_list) if a != b]
+                misslabels_counter = Counter([missmatch[1] for missmatch in missmatches])
+                self.logger.info(f"Missmatches batch {num_batches}, corrects: {running_corrects}/{inputs.size(0)}:\n"
+                                 f"List of missmatches (expected, predicted):\n"
+                                 f"{missmatches}\n"
+                                 f"Counter of incorrectly predicted labels (label, n of times it was returned):\n"
+                                 f"{misslabels_counter.most_common()}")
+
         # Calculate the validation loss and accuracy
         val_loss = running_loss / total_samples
         val_acc = running_corrects / total_samples
         return val_loss, val_acc
 
-    def train(self, trainset: Trainset, valset: Trainset | None, params: TrainingParams,
+    def train(self, trainset: IrisDataset, valset: IrisDataset | None, params: TrainingParams,
               tag_to_save: str | None = None) -> None:
         """
         Train model
@@ -216,11 +250,8 @@ class Model(abc.ABC):
 
             if tag_to_save:
                 self.append_metrics(tag_to_save, metric_to_save)
-                # if (epoch+1)%20 == 0:
-                self.logger.info(f"Saving under tag {tag_to_save}.")
-                self.save(tag_to_save)
-        # self.logger.info(f"Saving under tag {tag_to_save}.")
-        # self.save(tag_to_save)
+                #self.logger.info(f"Saving under tag {tag_to_save}.")
+                self.save(tag_to_save, epoch, remove_previous_epoch=(epoch % 100 != 0))
 
     @staticmethod
     def get_transform() -> transforms.Compose:
@@ -235,15 +266,20 @@ class Model(abc.ABC):
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
         ])
 
-    def save(self, tag: str) -> None:
+    def save(self, tag: str, epoch: int, remove_previous_epoch: bool = True) -> None:
         """
         Saves finetuned model to use in the testing
         :param tag: training tag
+        :param epoch: epoch number
+        :param remove_previous_epoch: whether to remove previous epoch model
         """
-        model_path = self.path_organizer.get_finetuned_model_path(self.name, tag)
+        model_path = self.path_organizer.get_finetuned_model_path(self.name, tag, epoch)
         os.makedirs(pathlib.Path(model_path).parent, exist_ok=True)
         self.logger.info(f"Saving model to path {model_path}")
         torch.save(self.model, model_path)
+        if remove_previous_epoch and epoch:
+            previous_model_path = self.path_organizer.get_finetuned_model_path(self.name, tag, epoch)
+            FsTools.rm_file(previous_model_path)
     
     def append_metrics(self, tag: str, epoch_metrics: dict) -> None:
         """
@@ -251,25 +287,30 @@ class Model(abc.ABC):
         :param tag: training tag
         :param epoch_metrics: dictionary containing the metrics for the current epoch
         """
-        # Determine the path for saving metrics
-        metrics_path = self.path_organizer.get_finetuned_model_path(self.name, tag)
-        metrics_path = pathlib.Path(metrics_path).with_name(f"{tag}_metrics.txt")
-
-        # Ensure the directory exists
-        os.makedirs(metrics_path.parent, exist_ok=True)
-
-        # Append the metrics to the file
+        metrics_path = self.path_organizer.get_finetuned_model_metrics_path(self.name, tag)
         self.logger.info(f"Appending metrics to path {metrics_path}")
+        FsTools.ensure_dir(metrics_path)
         with open(metrics_path, 'a') as file:
             file.write(str(epoch_metrics) + '\n')
 
-    def load_finetuned(self, tag: str) -> None:
+    def load_finetuned(self, tag: str, epoch: int | None = None) -> None:
         """
         Loads finetuned model
         :param tag: training tag
+        :param epoch: epoch number or None, if None, last epoch will be loaded
         """
-        model_path = self.path_organizer.get_finetuned_model_path(self.name, tag)
-        self.model = torch.load(model_path)
+        if epoch is None:
+            model_dir = self.path_organizer.get_finetuned_model_dir(self.name, tag)
+            epochs = []
+            for filename in os.listdir(model_dir):
+                if match := re.match(r"epoch(\d+).pt", filename):
+                    epochs.append(int(match[1]))
+            if not epochs:
+                raise FileNotFoundError(f"No models saved in given tag dir: {model_dir}")
+            epoch = max(epochs)
+        model_path = self.path_organizer.get_finetuned_model_path(self.name, tag, epoch)
+        self.model = torch.load(model_path, map_location=None if torch.cuda.is_available() else torch.device('cpu'))
+        self.logger.info(f"Model loaded from path: {model_path}")
 
     def log_node_names(self) -> None:
         train_nodes, eval_nodes = get_graph_node_names(self.model)

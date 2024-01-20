@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 import itertools
 import os
-import pathlib
 from collections import defaultdict
 from statistics import median
 
@@ -9,17 +10,19 @@ import pandas as pd
 
 from iris_recognition.extracted_features import ExtractedFeatures
 from iris_recognition.matchers.cosine_similarity_matcher import CosineSimilarityMatcher
+from iris_recognition.matchers.euclidean_distance_matcher import EuclideanDistanceMatcher
+from iris_recognition.matchers.matcher import MATCHER_SIMILARITY_FUNCTION
 from iris_recognition.models import get_model_by_name
+from iris_recognition.tools.fs_tools import FsTools
 from iris_recognition.tools.logger import get_logger
 from iris_recognition.tools.path_organizer import PathOrganizer
-from iris_recognition.trainset import Trainset
+from iris_recognition.irisdataset import IrisDataset
 
-MODELS_TAGS_NODES = [("AlexNet", "test0", "features.12")]
-DATASETS = ["miche", "mmu", "ubiris"]
+MODELS_TAGS_NODES = [("AlexNet", "mmu2", "features.12")]
+DATASETS = ["all_filtered_undersampled_train", "all_filtered_undersampled_val"]
 TRAINSET_LEN_LIMIT = 100
-HISTOGRAM_PATH = os.path.join(PathOrganizer.get_root(), "cosine_similarities.png")
-
-SIMILARITY_FUNC = CosineSimilarityMatcher.similarity
+SIMILARITY_FUNC: MATCHER_SIMILARITY_FUNCTION = CosineSimilarityMatcher.similarity
+SIMILARITY_NAME: str = "Cosine similarity"
 
 LOGGER = get_logger("Analyze similarities")
 
@@ -33,15 +36,19 @@ def similarities_distribution_info(similarities: list[float]) -> str:
 for model_name, tag, node_name in MODELS_TAGS_NODES:
     model = get_model_by_name(model_name)
     model.load_finetuned(tag)
-    trainset = Trainset.load_dataset(DATASETS, None, TRAINSET_LEN_LIMIT)
+    LOGGER.info(f"Testing model: {model_name} from tag {tag}, node: {node_name}.")
+    model.log_node_names()
+    trainset = IrisDataset.load_dataset(DATASETS, None, TRAINSET_LEN_LIMIT)
 
     label_to_features: dict[str, list[ExtractedFeatures]] = defaultdict(list)
+    features: ExtractedFeatures | None = None
     for i in range(len(trainset)):
         image, label = trainset[i]
         LOGGER.info(f"Extracting features from image {i} with label {label}.")
         features = model.extract_features(node_name, image)
         label_to_features[label].append(features)
     LOGGER.info("Done extracting features")
+    LOGGER.info(f"Features shape {features.shape()}")
 
     in_label_similarities: dict[str, list[float]] = defaultdict(list)
     for label, label_features in label_to_features.items():
@@ -69,6 +76,12 @@ for model_name, tag, node_name in MODELS_TAGS_NODES:
     df = pd.DataFrame.from_dict(df_dict)
     df.groupby(df.is_inlabel).similarity.plot.kde()
     plt.legend()
-    os.makedirs(pathlib.Path(HISTOGRAM_PATH).parent, exist_ok=True)
+    datasets_name_joined = ','.join(DATASETS)
+    plt.title(f"{model_name} {tag} {node_name} on sets: {datasets_name_joined}")
+    plt.suptitle(SIMILARITY_NAME)
+    histogram_path = os.path.join(PathOrganizer.get_root(), "similarities_plots", SIMILARITY_NAME,
+                                  f"{model_name}-{tag}-{node_name}-{datasets_name_joined}.png")
+    FsTools.ensure_dir(histogram_path)
     plt.tight_layout()
-    plt.savefig(HISTOGRAM_PATH)
+    plt.savefig(histogram_path)
+    LOGGER.info(f"Done. Plot saved to {histogram_path}.")

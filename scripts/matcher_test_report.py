@@ -8,17 +8,17 @@ from iris_recognition.matchers.cosine_similarity_matcher import CosineSimilarity
 from iris_recognition.matchers.matcher import Matcher
 from iris_recognition.models import get_model_by_name
 from iris_recognition.tools.logger import get_logger
-from iris_recognition.trainset import Trainset
+from iris_recognition.irisdataset import IrisDataset
 
-LIMIT_EXAMPLES = 200  # TODO: set to None later
+LIMIT_EXAMPLES = None  # TODO: set to None later
 
-MATCHERS: list[Matcher] = [CosineSimilarityMatcher(threshold=0.99)]
-TESTSET_NAMES = ["all_filtered_val"]
-MODELS_TAGS_NODES = [("AlexNet", "test0", "features.12")]
+MATCHERS: list[Matcher] = [CosineSimilarityMatcher(threshold=0.5)]
+TESTSET_NAMES = ["umap_filtered_val"]
+MODELS_TAGS_NODES = [("AlexNet", "t6", "features.12")]
 
 LOGGER = get_logger("Matcher test report")
 
-testset = Trainset.load_dataset(TESTSET_NAMES, transform=None, limit_examples=LIMIT_EXAMPLES)
+testset = IrisDataset.load_dataset(TESTSET_NAMES, transform=None, limit_examples=LIMIT_EXAMPLES)
 
 for matcher in MATCHERS:
     for model_name, tag, node_name in MODELS_TAGS_NODES:
@@ -66,9 +66,16 @@ for matcher in MATCHERS:
         total_fps = sum(label_fps.values())
         total_FPR = total_fps / (total_fps + total_tns)
         LOGGER.info(f"Total False Positive Rate = {total_FPR}")
+        LOGGER.info(f"Total recall = {total_recall}")
 
         LOGGER.info(f"Confusion matrix: \n"
                     f"TPs = {total_tps}, FNs = {total_fns}, \n"
                     f"FPs = {total_fps}, TNs = {total_tns}")
         total_accuracy = (total_tps + total_tns) / (total_tps + total_tns + total_fps + total_fns)
         LOGGER.info(f"Total Accuracy = {total_accuracy}")
+        total_sensitivity = total_tps / (total_tps + total_fns)
+        LOGGER.info(f"Total Sensitivity = {total_sensitivity}")
+        total_specificity = total_tns / (total_tns + total_fps)
+        LOGGER.info(f"Total Specificy = {total_specificity}")
+        total_balanced_accuracy = (total_specificity + total_sensitivity) / 2
+        LOGGER.info(f"Total Balanced Accuracy = {total_balanced_accuracy}")

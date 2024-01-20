@@ -8,7 +8,7 @@ from torchvision.utils import _log_api_usage_once
 from PIL import Image
 
 
-base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 data_dir = os.path.join(base_dir, "ubiris2_1_preprocessed")
 
 
