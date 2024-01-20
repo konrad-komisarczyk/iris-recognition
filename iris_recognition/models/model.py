@@ -149,7 +149,7 @@ class Model(abc.ABC):
                 labels_list = labels.data.flatten().tolist()
                 preds_list = preds.data.flatten().tolist()
                 missmatches = [(a, b) for (a, b) in zip(labels_list, preds_list) if a != b]
-                misslabels_counter = Counter([missmatch[2] for missmatch in missmatches])
+                misslabels_counter = Counter([missmatch[1] for missmatch in missmatches])
                 self.logger.info(f"Missmatches batch {num_batches}, corrects: {running_corrects}/{inputs.size(0)}:\n"
                                  f"List of missmatches (expected, predicted):\n"
                                  f"{missmatches}\n"
