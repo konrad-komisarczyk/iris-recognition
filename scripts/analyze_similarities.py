@@ -16,7 +16,7 @@ from iris_recognition.models import get_model_by_name
 from iris_recognition.tools.fs_tools import FsTools
 from iris_recognition.tools.logger import get_logger
 from iris_recognition.tools.path_organizer import PathOrganizer
-from iris_recognition.trainset import Trainset
+from iris_recognition.irisdataset import IrisDataset
 
 MODELS_TAGS_NODES = [("AlexNet", "mmu2", "features.12")]
 DATASETS = ["all_filtered_undersampled_train", "all_filtered_undersampled_val"]
@@ -38,7 +38,7 @@ for model_name, tag, node_name in MODELS_TAGS_NODES:
     model.load_finetuned(tag)
     LOGGER.info(f"Testing model: {model_name} from tag {tag}, node: {node_name}.")
     model.log_node_names()
-    trainset = Trainset.load_dataset(DATASETS, None, TRAINSET_LEN_LIMIT)
+    trainset = IrisDataset.load_dataset(DATASETS, None, TRAINSET_LEN_LIMIT)
 
     label_to_features: dict[str, list[ExtractedFeatures]] = defaultdict(list)
     features: ExtractedFeatures | None = None

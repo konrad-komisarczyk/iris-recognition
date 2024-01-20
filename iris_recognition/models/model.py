@@ -8,6 +8,7 @@ import re
 from abc import abstractmethod
 from dataclasses import dataclass
 from typing import Any
+from collections import Counter
 
 import torch
 from torchvision import transforms
@@ -19,7 +20,7 @@ from iris_recognition.extracted_features import ExtractedFeatures
 from iris_recognition.tools.fs_tools import FsTools
 from iris_recognition.tools.logger import get_logger
 from iris_recognition.tools.path_organizer import PathOrganizer
-from iris_recognition.trainset import Trainset
+from iris_recognition.irisdataset import IrisDataset
 from iris_recognition.transforms.horizontal_stack import HorizontalStack
 
 
@@ -145,12 +146,22 @@ class Model(abc.ABC):
                 num_batches += 1
                 total_samples += inputs.size(0)
 
+                labels_list = labels.data.flatten().tolist()
+                preds_list = preds.data.flatten().tolist()
+                missmatches = [(a, b) for (a, b) in zip(labels_list, preds_list) if a != b]
+                misslabels_counter = Counter([missmatch[2] for missmatch in missmatches])
+                self.logger.info(f"Missmatches batch {num_batches}, corrects: {running_corrects}/{inputs.size(0)}:\n"
+                                 f"List of missmatches (expected, predicted):\n"
+                                 f"{missmatches}\n"
+                                 f"Counter of incorrectly predicted labels (label, n of times it was returned):\n"
+                                 f"{misslabels_counter.most_common()}")
+
         # Calculate the validation loss and accuracy
         val_loss = running_loss / total_samples
         val_acc = running_corrects / total_samples
         return val_loss, val_acc
 
-    def train(self, trainset: Trainset, valset: Trainset | None, params: TrainingParams,
+    def train(self, trainset: IrisDataset, valset: IrisDataset | None, params: TrainingParams,
               tag_to_save: str | None = None) -> None:
         """
         Train model
@@ -251,6 +262,7 @@ class Model(abc.ABC):
             epoch = max(epochs)
         model_path = self.path_organizer.get_finetuned_model_path(self.name, tag, epoch)
         self.model = torch.load(model_path, map_location=None if torch.cuda.is_available() else torch.device('cpu'))
+        self.logger.info(f"Model loaded from path: {model_path}")
 
     def log_node_names(self) -> None:
         train_nodes, eval_nodes = get_graph_node_names(self.model)

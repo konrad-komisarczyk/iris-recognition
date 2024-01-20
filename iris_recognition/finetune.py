@@ -8,7 +8,7 @@ from iris_recognition.models import model_name_to_class, get_model_by_name
 from iris_recognition.models.model import TrainingParams
 from iris_recognition.tools.logger import set_loggers_stderr_verbosity, add_file_handler
 from iris_recognition.tools.path_organizer import PathOrganizer
-from iris_recognition.trainset import Trainset
+from iris_recognition.irisdataset import IrisDataset
 
 
 def get_parser() -> argparse.ArgumentParser:
@@ -55,10 +55,10 @@ def finetune(parsed_args: argparse.Namespace) -> None:
 
     transform = model.get_transform()
     examples_to_keep = set(parsed_args.example_names_to_keep) if parsed_args.example_names_to_keep else None
-    trainset = Trainset.load_dataset(parsed_args.training_datasets, transform, parsed_args.trainset_len_limit,
-                                     examples_to_keep)
-    valset = Trainset.load_dataset(parsed_args.validation_datasets, transform, parsed_args.trainset_len_limit,
-                                   examples_to_keep) \
+    trainset = IrisDataset.load_dataset(parsed_args.training_datasets, transform, parsed_args.trainset_len_limit,
+                                        examples_to_keep)
+    valset = IrisDataset.load_dataset(parsed_args.validation_datasets, transform, parsed_args.trainset_len_limit,
+                                      examples_to_keep) \
         if parsed_args.validation_datasets else None
 
     if tag_to_load := parsed_args.load_from_tag:
