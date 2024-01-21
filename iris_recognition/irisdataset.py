@@ -12,7 +12,7 @@ from iris_recognition.tools.logger import get_logger
 from iris_recognition.tools.path_organizer import PathOrganizer
 
 
-class Trainset(Dataset):
+class IrisDataset(Dataset):
     """
     Class for loading data for finetuning pretrained_models
     """
@@ -22,13 +22,13 @@ class Trainset(Dataset):
         """
         :param transform: transform function to be applied to images, or None if no transform should be applied
         """
-        np.random.seed(Trainset.SEED)
+        np.random.seed(IrisDataset.SEED)
         self.transform = transform
         self.image_paths: list[str] = []
         self.labels: list[int] = []  # example: [0, 0, 0, 1, 1, 2, 3, 3, 3, 3, 3, 4, ...]
         self.label_names: list[str] = []  # self.label_names[i] = name of the label i
 
-        self.logger = get_logger("Trainset")
+        self.logger = get_logger("IrisDataset")
 
     def __len__(self):
         return len(self.image_paths)
@@ -58,7 +58,7 @@ class Trainset(Dataset):
 
     @staticmethod
     def load_dataset(dataset_names: list[str], transform: Any, limit_examples: int | None = None,
-                     example_names_to_keep: set[str] | None = None) -> Trainset:
+                     example_names_to_keep: set[str] | None = None) -> IrisDataset:
         """
         :param dataset_names: list of names of datasets to load from
         :param transform: transform function that will be applied to images
@@ -67,12 +67,12 @@ class Trainset(Dataset):
         :return: Trainset with examples from all given datasets
         """
         path_organizer = PathOrganizer()
-        res = Trainset(transform)
-        res.logger.info(f"Loading Trainset examples...")
+        res = IrisDataset(transform)
+        res.logger.info(f"Loading dataset examples...")
         for dataset_name in dataset_names:
             dataset_train_dir = path_organizer.get_dataset_preprocessed(dataset_name)
             res._load_examples_from_dir(dataset_train_dir, limit_examples, example_names_to_keep)
-        res.logger.info(f"Finished loading Trainset examples. Trainset size: {len(res)}.\n"
+        res.logger.info(f"Finished loading dataset examples. Dataset size: {len(res)}.\n"
                         f"Label_names: {res.label_names}.")
         return res
 
@@ -102,6 +102,6 @@ class Trainset(Dataset):
             self.label_names.append(new_label_name)
         for imagepath in imagepaths:
             if limit_examples is None or len(self) < limit_examples:
-                self.logger.debug(f"Adding to trainset image with label {new_label} from path {imagepath}")
+                self.logger.debug(f"Adding to dataset image with label {new_label} from path {imagepath}")
                 self.labels.append(new_label)
                 self.image_paths.append(imagepath)

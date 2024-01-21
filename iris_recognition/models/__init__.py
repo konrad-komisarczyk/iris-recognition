@@ -1,6 +1,7 @@
 from typing import Callable
 
 from iris_recognition.models.alexnet import Alexnet
+from iris_recognition.models.alexnet_from_zero import AlexnetFromZero
 from iris_recognition.models.densenet import Densenet
 from iris_recognition.models.googlenet import Googlenet
 from iris_recognition.models.model import Model
@@ -14,6 +15,7 @@ model_name_to_class: dict[str, Callable[[], Model]] = {
     "VGG16": Vgg,
     "DenseNet": Densenet,
     "AlexNet": Alexnet,
+    "AlexNetFromZero": AlexnetFromZero,
     "ViT": Vit,
     "GoogLeNet": Googlenet,
 }

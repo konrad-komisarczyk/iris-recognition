@@ -8,17 +8,17 @@ from iris_recognition.matchers.cosine_similarity_matcher import CosineSimilarity
 from iris_recognition.matchers.matcher import Matcher
 from iris_recognition.models import get_model_by_name
 from iris_recognition.tools.logger import get_logger
-from iris_recognition.trainset import Trainset
+from iris_recognition.irisdataset import IrisDataset
 
 LIMIT_EXAMPLES = None  # TODO: set to None later
 
-MATCHERS: list[Matcher] = [CosineSimilarityMatcher(threshold=0.5)]
-TESTSET_NAMES = ["umap_filtered_val"]
-MODELS_TAGS_NODES = [("AlexNet", "t6", "features.12")]
+MATCHERS: list[Matcher] = [CosineSimilarityMatcher(threshold=0.75)]
+TESTSET_NAMES = ["mmu_filtered_testing_sample"]
+MODELS_TAGS_NODES = [("AlexNet", "mmu_best", "features.12")]
 
 LOGGER = get_logger("Matcher test report")
 
-testset = Trainset.load_dataset(TESTSET_NAMES, transform=None, limit_examples=LIMIT_EXAMPLES)
+testset = IrisDataset.load_dataset(TESTSET_NAMES, transform=None, limit_examples=LIMIT_EXAMPLES)
 
 for matcher in MATCHERS:
     for model_name, tag, node_name in MODELS_TAGS_NODES:

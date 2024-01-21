@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import itertools
 import os
-import pathlib
 from collections import defaultdict
 from statistics import median
 
@@ -11,17 +10,19 @@ import pandas as pd
 
 from iris_recognition.extracted_features import ExtractedFeatures
 from iris_recognition.matchers.cosine_similarity_matcher import CosineSimilarityMatcher
+from iris_recognition.matchers.euclidean_distance_matcher import EuclideanDistanceMatcher
+from iris_recognition.matchers.matcher import MATCHER_SIMILARITY_FUNCTION
 from iris_recognition.models import get_model_by_name
+from iris_recognition.tools.fs_tools import FsTools
 from iris_recognition.tools.logger import get_logger
 from iris_recognition.tools.path_organizer import PathOrganizer
-from iris_recognition.trainset import Trainset
+from iris_recognition.irisdataset import IrisDataset
 
-MODELS_TAGS_NODES = [("AlexNet", "t6", "features.12")]
-DATASETS = ["umap_filtered_val"]
+MODELS_TAGS_NODES = [("AlexNet", "mmu_best", "features.12")]
+DATASETS = ["ubiris_filtered_undersampled_testing_sample"]
 TRAINSET_LEN_LIMIT = 100
-
-
-SIMILARITY_FUNC = CosineSimilarityMatcher.similarity
+SIMILARITY_FUNC: MATCHER_SIMILARITY_FUNCTION = CosineSimilarityMatcher.similarity
+SIMILARITY_NAME: str = "Cosine similarity"
 
 LOGGER = get_logger("Analyze similarities")
 
@@ -37,7 +38,7 @@ for model_name, tag, node_name in MODELS_TAGS_NODES:
     model.load_finetuned(tag)
     LOGGER.info(f"Testing model: {model_name} from tag {tag}, node: {node_name}.")
     model.log_node_names()
-    trainset = Trainset.load_dataset(DATASETS, None, TRAINSET_LEN_LIMIT)
+    trainset = IrisDataset.load_dataset(DATASETS, None, TRAINSET_LEN_LIMIT)
 
     label_to_features: dict[str, list[ExtractedFeatures]] = defaultdict(list)
     features: ExtractedFeatures | None = None
@@ -77,9 +78,10 @@ for model_name, tag, node_name in MODELS_TAGS_NODES:
     plt.legend()
     datasets_name_joined = ','.join(DATASETS)
     plt.title(f"{model_name} {tag} {node_name} on sets: {datasets_name_joined}")
-    histogram_path = os.path.join(PathOrganizer.get_root(),
-                                  f"cosine_similarities/{model_name}-{tag}-{node_name}-{datasets_name_joined}.png")
-    os.makedirs(pathlib.Path(histogram_path).parent, exist_ok=True)
+    plt.suptitle(SIMILARITY_NAME)
+    histogram_path = os.path.join(PathOrganizer.get_root(), "similarities_plots", SIMILARITY_NAME,
+                                  f"{model_name}-{tag}-{node_name}-{datasets_name_joined}.png")
+    FsTools.ensure_dir(histogram_path)
     plt.tight_layout()
     plt.savefig(histogram_path)
     LOGGER.info(f"Done. Plot saved to {histogram_path}.")
