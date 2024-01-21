@@ -14,6 +14,13 @@ import os
 from pathlib import Path
 import sys
 
+from iris_recognition.feature_extractor import FeatureExtractor
+from iris_recognition.matchers.cosine_similarity_matcher import CosineSimilarityMatcher
+
+# Init backend model classes
+FEATURE_EXTRACTOR = FeatureExtractor("AlexNet", "mmu_all2", "features.12")
+MATCHER = CosineSimilarityMatcher(0.75)
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 PROJ_DIR = Path(__file__).resolve().parent.parent.parent
@@ -21,9 +28,6 @@ TMP_FILES_DIR = os.path.join(BASE_DIR, "TMP_FILES")
 
 sys.path.append(PROJ_DIR.as_posix())
 
-from iris_recognition.preprocessing.preprocessor import Preprocessor
-
-PREPROCESSOR = Preprocessor()
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 

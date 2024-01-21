@@ -5,18 +5,19 @@ from tqdm import tqdm
 import random
 
 base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-destination_dir = os.path.join(base_dir, "data")
+destination_dir = os.path.join(base_dir, "data", "datasets_preprocessed")
 os.makedirs(destination_dir, exist_ok=True)
 
-data_folders = ["miche_filtered", "ubiris_filtered", "mmu_filtered"]
+MIN_EXAMPLES_PER_CLASS = 5
+DATA_FOLDERS = ["ubiris_filtered2"]
 
-for source in tqdm(data_folders):
+for source in tqdm(DATA_FOLDERS):
     eye_id = 1
     cur_destination_dir = os.path.join(destination_dir, source)
     os.makedirs(cur_destination_dir, exist_ok=True)
     cur_data_path = os.path.join(base_dir, source)
     for eye_dir in os.listdir(os.path.join(cur_data_path)):
-        if len(os.listdir(os.path.join(cur_data_path, eye_dir))) >= 5:
+        if len(os.listdir(os.path.join(cur_data_path, eye_dir))) >= MIN_EXAMPLES_PER_CLASS:
             cur_eye_dest_dir = os.path.join(cur_destination_dir, str(eye_id))
             os.makedirs(cur_eye_dest_dir, exist_ok=True)
             for file in os.listdir(os.path.join(cur_data_path, eye_dir)):

@@ -7,6 +7,7 @@ from tqdm import tqdm
 
 base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
+THRESHOLD = 80
 
 def filter_bad_segmentation_samples(data_dir, destination_dir, threshold):
     for eye in tqdm(os.listdir(data_dir)):
@@ -23,34 +24,34 @@ def filter_bad_segmentation_samples(data_dir, destination_dir, threshold):
 
 
 data_dir = os.path.join(base_dir, "ubiris_all_preprocessed")
-destination_dir = os.path.join(base_dir, "ubiris_filtered")
+destination_dir = os.path.join(base_dir, "ubiris_filtered2")
 os.makedirs(destination_dir, exist_ok=True)
 
-filter_bad_segmentation_samples(data_dir, destination_dir, 60)
+filter_bad_segmentation_samples(data_dir, destination_dir, THRESHOLD)
 
 plt.hist([len(os.listdir(os.path.join(destination_dir, x))) for x in os.listdir(destination_dir)], bins=30)
 good = sum([len(os.listdir(os.path.join(destination_dir, x))) >= 5 for x in os.listdir(destination_dir)])
 plt.title(f"Ubiris filtered, >=5 num: {good}")
 plt.show()
-
-data_dir = os.path.join(base_dir, "miche_preprocessed")
-destination_dir = os.path.join(base_dir, "miche_filtered")
-os.makedirs(destination_dir, exist_ok=True)
-
-filter_bad_segmentation_samples(data_dir, destination_dir, 60)
-
-plt.hist([len(os.listdir(os.path.join(destination_dir, x))) for x in os.listdir(destination_dir)], bins=12)
-good = sum([len(os.listdir(os.path.join(destination_dir, x))) >= 5 for x in os.listdir(destination_dir)])
-plt.title(f"Miche filtered, >=5 num: {good}")
-plt.show()
-
-data_dir = os.path.join(base_dir, "mmu_preprocessed")
-destination_dir = os.path.join(base_dir, "mmu_filtered")
-os.makedirs(destination_dir, exist_ok=True)
-
-filter_bad_segmentation_samples(data_dir, destination_dir, 60)
-
-plt.hist([len(os.listdir(os.path.join(destination_dir, x))) for x in os.listdir(destination_dir)], bins=12)
-good = sum([len(os.listdir(os.path.join(destination_dir, x))) >= 5 for x in os.listdir(destination_dir)])
-plt.title(f"MMU filtered, >=5 num: {good}")
-plt.show()
+#
+# data_dir = os.path.join(base_dir, "miche_preprocessed")
+# destination_dir = os.path.join(base_dir, "miche_filtered")
+# os.makedirs(destination_dir, exist_ok=True)
+#
+# filter_bad_segmentation_samples(data_dir, destination_dir, 60)
+#
+# plt.hist([len(os.listdir(os.path.join(destination_dir, x))) for x in os.listdir(destination_dir)], bins=12)
+# good = sum([len(os.listdir(os.path.join(destination_dir, x))) >= 5 for x in os.listdir(destination_dir)])
+# plt.title(f"Miche filtered, >=5 num: {good}")
+# plt.show()
+#
+# data_dir = os.path.join(base_dir, "mmu_preprocessed")
+# destination_dir = os.path.join(base_dir, "mmu_filtered")
+# os.makedirs(destination_dir, exist_ok=True)
+#
+# filter_bad_segmentation_samples(data_dir, destination_dir, 60)
+#
+# plt.hist([len(os.listdir(os.path.join(destination_dir, x))) for x in os.listdir(destination_dir)], bins=12)
+# good = sum([len(os.listdir(os.path.join(destination_dir, x))) >= 5 for x in os.listdir(destination_dir)])
+# plt.title(f"MMU filtered, >=5 num: {good}")
+# plt.show()
