@@ -28,7 +28,7 @@ class IrisDataset(Dataset):
         self.labels: list[int] = []  # example: [0, 0, 0, 1, 1, 2, 3, 3, 3, 3, 3, 4, ...]
         self.label_names: list[str] = []  # self.label_names[i] = name of the label i
 
-        self.logger = get_logger("Trainset")
+        self.logger = get_logger("IrisDataset")
 
     def __len__(self):
         return len(self.image_paths)
@@ -72,7 +72,7 @@ class IrisDataset(Dataset):
         for dataset_name in dataset_names:
             dataset_train_dir = path_organizer.get_dataset_preprocessed(dataset_name)
             res._load_examples_from_dir(dataset_train_dir, limit_examples, example_names_to_keep)
-        res.logger.info(f"Finished loading dataset examples. Trainset size: {len(res)}.\n"
+        res.logger.info(f"Finished loading dataset examples. Dataset size: {len(res)}.\n"
                         f"Label_names: {res.label_names}.")
         return res
 

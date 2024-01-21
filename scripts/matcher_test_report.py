@@ -12,9 +12,9 @@ from iris_recognition.irisdataset import IrisDataset
 
 LIMIT_EXAMPLES = None  # TODO: set to None later
 
-MATCHERS: list[Matcher] = [CosineSimilarityMatcher(threshold=0.5)]
-TESTSET_NAMES = ["umap_filtered_val"]
-MODELS_TAGS_NODES = [("AlexNet", "t6", "features.12")]
+MATCHERS: list[Matcher] = [CosineSimilarityMatcher(threshold=0.75)]
+TESTSET_NAMES = ["mmu_filtered_testing_sample"]
+MODELS_TAGS_NODES = [("AlexNet", "mmu_best", "features.12")]
 
 LOGGER = get_logger("Matcher test report")
 

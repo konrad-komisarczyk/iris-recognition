@@ -18,8 +18,8 @@ from iris_recognition.tools.logger import get_logger
 from iris_recognition.tools.path_organizer import PathOrganizer
 from iris_recognition.irisdataset import IrisDataset
 
-MODELS_TAGS_NODES = [("AlexNet", "mmu2", "features.12")]
-DATASETS = ["all_filtered_undersampled_train", "all_filtered_undersampled_val"]
+MODELS_TAGS_NODES = [("AlexNet", "mmu_best", "features.12")]
+DATASETS = ["ubiris_filtered_undersampled_testing_sample"]
 TRAINSET_LEN_LIMIT = 100
 SIMILARITY_FUNC: MATCHER_SIMILARITY_FUNCTION = CosineSimilarityMatcher.similarity
 SIMILARITY_NAME: str = "Cosine similarity"
