@@ -5,8 +5,6 @@ import subprocess
 from datetime import datetime
 
 import torch.cuda
-from torch import Tensor
-from torchvision import transforms
 import os
 from PIL import Image
 
