@@ -8,7 +8,7 @@ import uuid
 class WebsiteUser(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    feature_vector = models.TextField(max_length=500, blank=True, null=True)
+    feature_vector = models.BinaryField()
     unique_information = models.UUIDField(default=uuid.uuid4, editable=False)
 
 

@@ -19,7 +19,7 @@ from iris_recognition.tools.path_organizer import PathOrganizer
 from iris_recognition.irisdataset import IrisDataset
 
 MODELS_TAGS_NODES = [("AlexNet", "full_mmu_and_ubiris_best_examples2", "features.12")]
-DATASETS = ["ubiris_filtered2_testing_sample"]
+DATASETS = ["mmu_all_train", "mmu_all_val"]
 TRAINSET_LEN_LIMIT = 100
 SIMILARITY_FUNC: MATCHER_SIMILARITY_FUNCTION = CosineSimilarityMatcher.similarity
 SIMILARITY_NAME: str = "Cosine Similarity"
