@@ -4,6 +4,7 @@ import hashlib
 import subprocess
 from datetime import datetime
 
+import torch.cuda
 from torch import Tensor
 from torchvision import transforms
 import os
@@ -33,7 +34,7 @@ class Preprocessor:
             predictor_path = os.path.join(self.path_organizer.get_root(), "preprocessing", "predict_one_img.py")
             process_call = [
                 "python", predictor_path,
-                "--gpu", "None",
+                "--gpu", "0" if torch.cuda.is_available() else "None",
                 "--img_path", input_file_path,
                 "--save_dir", self.destination_dir,
                 "--model", "M1"
