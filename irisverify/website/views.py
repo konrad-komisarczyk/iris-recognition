@@ -3,12 +3,13 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 import traceback
-import logging
+
+from iris_recognition.tools.logger import get_logger
 from .forms import WebsiteUserLoginForm, WebsiteUserCreationForm
 from .models import WebsiteUser
 from iris_model.verify import extract_feature_vector
 
-logger = logging.getLogger("irisverify")
+logger = get_logger("irisverify")
 
 
 # Create your views here.
@@ -35,7 +36,7 @@ def login_view(request):
             if username_exists(username):
                 try:
                     user = authenticate(username=username, iris_image=iris_image)
-                except Exception as e:
+                except Exception:
                     logger.error(f'Error when authenticating user:\n {traceback.format_exc()}')
                     user = None
 
@@ -76,10 +77,11 @@ def register_view(request):
                 try:
                     websiteuser.feature_vector = extract_feature_vector(iris_image)
                     websiteuser.save()
-                except Exception as e:
+                except Exception:
                     logger.error(f'Error when extracting feature vector from input image:\n {traceback.format_exc()}')
                     user_tmp.delete()
-                    return render(request, "register.html", {"form": form, "extraction_error": True})
+                    return render(request, "register.html",
+                                  {"form": form, "extraction_error": True})
                 user = authenticate(username=username, iris_image=iris_image, just_registered=True)
                 login(request, user)
                 return redirect("index")
