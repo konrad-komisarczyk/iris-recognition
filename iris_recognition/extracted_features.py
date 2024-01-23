@@ -12,6 +12,7 @@ class ExtractedFeatures:
     """
     def __init__(self, data: tensor) -> None:
         self.data = data
+        self.data.to(device='cuda' if torch.cuda.is_available() else 'cpu')
 
     def shape(self) -> list[int]:
         """
