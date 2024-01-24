@@ -14,8 +14,11 @@ import os
 from pathlib import Path
 import sys
 
-from iris_recognition.feature_extractor import FeatureExtractor
+PROJ_DIR = Path(__file__).resolve().parent.parent.parent
+sys.path.append(os.path.join(PROJ_DIR, ""))
+
 from iris_recognition.matchers.cosine_similarity_matcher import CosineSimilarityMatcher
+from iris_recognition.feature_extractor import FeatureExtractor
 
 # Init backend model classes
 FEATURE_EXTRACTOR = FeatureExtractor("AlexNet", "mmu_all2", "features.12")

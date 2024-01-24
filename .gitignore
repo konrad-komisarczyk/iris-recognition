@@ -21,3 +21,5 @@ irisverify/db.sqlite3
 /all_preprocessed_filtered
 /final_testing_sample
 /irisverify/log.log
+*testing_sample
+/data/
