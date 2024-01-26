@@ -44,8 +44,8 @@ def find_best_threshold(all_in: list[float], all_between: list[float]) -> tuple[
     all_values = list(set(all_in) | set(all_between))
     best_threshold = 0
     best_value = -np.Inf
-    for idx in range(len(all_values) - 1):
-        potential_threshold = (all_values[idx] + all_values[idx + 1]) / 2
+    for potential_threshold in all_values:
+        #potential_threshold = (all_values[idx] + all_values[idx + 1]) / 2
         if (new_value := balanced_accuracy_for_threshold(potential_threshold, all_in, all_between)) >= best_value:
             best_value = new_value
             best_threshold = potential_threshold
