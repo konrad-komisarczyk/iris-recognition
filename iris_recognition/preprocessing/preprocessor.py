@@ -50,6 +50,7 @@ class Preprocessor:
             normalized_image_path = os.path.join(self.destination_dir, f'{input_filename[:-4]}_normalized.png')
             self.logger.info(f"Done normalizing. Saved to {normalized_image_path}")
             normalized_img = Image.open(normalized_image_path)
+            normalized_img.load()
         except Exception as e:
             self.logger.error(f"Preprocessing failed. Error that occurred: {e}")
             raise e

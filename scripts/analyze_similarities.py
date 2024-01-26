@@ -6,6 +6,7 @@ from collections import defaultdict
 from statistics import median
 
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 
 from iris_recognition.extracted_features import ExtractedFeatures
@@ -20,11 +21,35 @@ from iris_recognition.irisdataset import IrisDataset
 
 MODELS_TAGS_NODES = [("AlexNet", "full_mmu_and_ubiris_best_examples2", "features.12")]
 DATASETS = ["mmu_all_train", "mmu_all_val"]
-TRAINSET_LEN_LIMIT = 100
+TRAINSET_LEN_LIMIT = 100  # None
+
 SIMILARITY_FUNC: MATCHER_SIMILARITY_FUNCTION = CosineSimilarityMatcher.similarity
-SIMILARITY_NAME: str = "Cosine Similarity"
+SIMILARITY_NAME: str = "Podobieństwo cosinusowe"
+
+# SIMILARITY_FUNC: MATCHER_SIMILARITY_FUNCTION = CosineSimilarityMatcher.similarity
+# SIMILARITY_NAME: str = "Cosine Similarity"
 
 LOGGER = get_logger("Analyze similarities")
+
+
+def balanced_accuracy_for_threshold(threshold: float, all_in: list[float], all_between: list[float]) -> float:
+    tp = sum(1 for sim in all_in if sim >= threshold)
+    tn = sum(1 for sim in all_between if sim < threshold)
+    sensitivity = tp / len(all_in)
+    specificity = tn / len(all_between)
+    return (sensitivity + specificity) / 2
+
+
+def find_best_threshold(all_in: list[float], all_between: list[float]) -> tuple[float, float]:
+    all_values = list(set(all_in) | set(all_between))
+    best_threshold = 0
+    best_value = -np.Inf
+    for idx in range(len(all_values) - 1):
+        potential_threshold = (all_values[idx] + all_values[idx + 1]) / 2
+        if (new_value := balanced_accuracy_for_threshold(potential_threshold, all_in, all_between)) >= best_value:
+            best_value = new_value
+            best_threshold = potential_threshold
+    return best_threshold, best_value
 
 
 def similarities_distribution_info(similarities: list[float]) -> str:
@@ -68,20 +93,32 @@ for model_name, tag, node_name in MODELS_TAGS_NODES:
                     f"{similarities_distribution_info(between_label_similarities[(label1, label2)])}")
     all_between_label_similarities = list(itertools.chain.from_iterable(between_label_similarities.values()))
 
+    LOGGER.info("Searching for best threshold...")
+    best_threshold, best_ba = find_best_threshold(all_in_label_similarities, all_between_label_similarities)
+    LOGGER.info(f"Suggested best threshold: {best_threshold:.3f} gives balanced accuracy {best_ba:.3f}")
+
     # plotting densities
     df_dict = {
-        'is_inlabel': ["in_label"] * len(all_in_label_similarities) + ["between"] * len(all_between_label_similarities),
-        'similarity': all_in_label_similarities + all_between_label_similarities
+        'is_inlabel': ["różne klasy"] * len(all_between_label_similarities) +
+                      ["ta sama klasa"] * len(all_in_label_similarities),
+        'similarity': all_between_label_similarities +
+                      all_in_label_similarities
     }
     df = pd.DataFrame.from_dict(df_dict)
     df.groupby(df.is_inlabel).similarity.plot.kde()
-    plt.legend()
+
+    plt.rcParams['figure.figsize'] = [12, 8]
+    plt.rcParams['font.size'] = 14
     datasets_name_joined = ','.join(DATASETS)
-    plt.title(f"{model_name} {tag} {node_name} on sets: {datasets_name_joined}")
+    # plt.title(f"{model_name} {tag} {node_name} on sets: {datasets_name_joined}")
     plt.suptitle(SIMILARITY_NAME)
+    plt.axvline(x=best_threshold, color="r", label="wyznaczony próg", linestyle="dashed")
+    plt.ylabel("gęstość przybliżonego rozkładu")
+    plt.legend()
     histogram_path = os.path.join(PathOrganizer.get_root(), "similarities_plots", SIMILARITY_NAME,
                                   f"{model_name}-{tag}-{node_name}-{datasets_name_joined}.png")
     FsTools.ensure_dir(histogram_path)
     plt.tight_layout()
     plt.savefig(histogram_path)
+    plt.show()
     LOGGER.info(f"Done. Plot saved to {histogram_path}.")

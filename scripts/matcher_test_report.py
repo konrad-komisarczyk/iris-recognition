@@ -13,7 +13,7 @@ from iris_recognition.irisdataset import IrisDataset
 
 LIMIT_EXAMPLES = None  # TODO: set to None later
 
-MATCHERS: list[Matcher] = [CosineSimilarityMatcher(threshold=0.67), EuclideanDistanceMatcher(threshold=140)]
+MATCHERS: list[Matcher] = [CosineSimilarityMatcher(threshold=0.67)]
 TESTSET_NAMES = ["mmu_all_testing_sample"]
 MODELS_TAGS_NODES = [("AlexNet", "mmu_all2", "features.12")]
 
@@ -77,6 +77,6 @@ for matcher in MATCHERS:
         total_sensitivity = total_tps / (total_tps + total_fns)
         LOGGER.info(f"Total Sensitivity = {total_sensitivity}")
         total_specificity = total_tns / (total_tns + total_fps)
-        LOGGER.info(f"Total Specificy = {total_specificity}")
+        LOGGER.info(f"Total Specificity = {total_specificity}")
         total_balanced_accuracy = (total_specificity + total_sensitivity) / 2
         LOGGER.info(f"Total Balanced Accuracy = {total_balanced_accuracy}")
