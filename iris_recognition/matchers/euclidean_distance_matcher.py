@@ -18,7 +18,7 @@ class EuclideanDistanceMatcher(Matcher):
 
     @staticmethod
     def distance(features_1: ExtractedFeatures, features_2: ExtractedFeatures) -> float:
-        return float((features_1.flatten() - features_2.flatten()).pow(2).sum().sqrt())
+        return - float((features_1.flatten() - features_2.flatten()).pow(2).sum().sqrt())
 
     def match(self, features_1: ExtractedFeatures, features_2: ExtractedFeatures) -> bool:
         """
@@ -29,4 +29,4 @@ class EuclideanDistanceMatcher(Matcher):
         if features_1.shape() != features_2.shape():
             raise ValueError(f"Features shapes do not match. {features_1.shape()} != {features_2.shape()}.")
         distance = EuclideanDistanceMatcher.distance(features_1, features_2)
-        return distance <= self.threshold
+        return distance >= self.threshold
