@@ -2,10 +2,10 @@ import os
 import random
 import shutil
 
-
+dataset = "miche_filtered"
 base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-data_dir = os.path.join(base_dir, "all_preprocessed_filtered")
-destination_dir = os.path.join(base_dir, "final_testing_sample")
+data_dir = os.path.join(base_dir, dataset)
+destination_dir = os.path.join(base_dir, f"{dataset}_testing_sample")
 os.makedirs(destination_dir, exist_ok=True)
 
 classes_list = os.listdir(data_dir)

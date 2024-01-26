@@ -60,6 +60,7 @@ class Preprocessor:
             FsTools.rm_file(os.path.join(self.destination_dir, f'{input_filename[:-4]}_inner_boundary.png'))
             FsTools.rm_file(os.path.join(self.destination_dir, f'{input_filename[:-4]}_outer_boundary.png'))
             FsTools.rm_file(os.path.join(self.destination_dir, f'{input_filename[:-4]}_seg.png'))
+            FsTools.rm_file(os.path.join(self.destination_dir, f'{input_filename[:-4]}_iris.png'))
             FsTools.rm_file(os.path.join(self.destination_dir, f'{input_filename[:-4]}_normalized.png'))
         return normalized_img
 

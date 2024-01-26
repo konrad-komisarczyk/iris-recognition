@@ -281,5 +281,8 @@ class Model(abc.ABC):
         feature_extractor = create_feature_extractor(self.model, [node_name])
         transform = self.get_transform()
         transformed_image = transform(preprocessed_image)
+        if next(self.model.parameters()).is_cuda:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+            transformed_image = transformed_image.to(device=device)
         extracted_features_value = feature_extractor(transformed_image)[node_name]
         return ExtractedFeatures(extracted_features_value)

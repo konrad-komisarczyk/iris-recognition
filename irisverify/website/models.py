@@ -8,8 +8,11 @@ import uuid
 class WebsiteUser(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    feature_vector = models.BinaryField()
+    feature_vector = models.BinaryField(blank=True, null=True)
     unique_information = models.UUIDField(default=uuid.uuid4, editable=False)
+
+    def __str__(self):
+        return self.user.username
 
 
 @receiver(post_save, sender=User)
