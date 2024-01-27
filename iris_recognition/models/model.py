@@ -186,6 +186,7 @@ class Model(abc.ABC):
         criterion = torch.nn.CrossEntropyLoss()
         optimizer = torch.optim.Adam(self.model.parameters(), lr=params.learning_rate, weight_decay=params.weight_decay)
 
+        curr_max_val_acc = 0
         for epoch in range(params.num_epochs):
             train_loss, train_acc = self._train_epoch(device, train_loader, optimizer, criterion)
             train_metrics_str = f"train loss: {train_loss:.4f}, train acc: {train_acc:.4f}"
@@ -194,6 +195,7 @@ class Model(abc.ABC):
             }
 
             val_metrics_str = ""
+            val_acc = curr_max_val_acc  # just to init the variable
             if valset:
                 val_loss, val_acc = self._eval_epoch(device, val_loader, criterion)
                 val_metrics_str = f"val loss: {val_loss:.4f}, val acc: {val_acc:.4f}"
@@ -202,10 +204,12 @@ class Model(abc.ABC):
             # Print the epoch results
             self.logger.info(f'Epoch [{epoch + 1}/{params.num_epochs}]: {train_metrics_str}; {val_metrics_str}')
 
-            if tag_to_save:
+            if tag_to_save and val_acc >= curr_max_val_acc:
                 self.append_metrics(tag_to_save, metric_to_save)
                 #self.logger.info(f"Saving under tag {tag_to_save}.")
-                self.save(tag_to_save, epoch, remove_previous_epoch=(epoch % 100 != 0))
+                self.save(tag_to_save, epoch, remove_previous_epochs=True)
+
+            curr_max_val_acc = max(curr_max_val_acc, val_acc)
 
     @staticmethod
     def get_transform() -> transforms.Compose:
@@ -220,20 +224,21 @@ class Model(abc.ABC):
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
         ])
 
-    def save(self, tag: str, epoch: int, remove_previous_epoch: bool = True) -> None:
+    def save(self, tag: str, epoch: int, remove_previous_epochs: bool = True) -> None:
         """
         Saves finetuned model to use in the testing
         :param tag: training tag
         :param epoch: epoch number
-        :param remove_previous_epoch: whether to remove previous epoch model
+        :param remove_previous_epochs: whether to remove previous epoch model
         """
         model_path = self.path_organizer.get_finetuned_model_path(self.name, tag, epoch)
         os.makedirs(pathlib.Path(model_path).parent, exist_ok=True)
         self.logger.info(f"Saving model to path {model_path}")
         torch.save(self.model, model_path)
-        if remove_previous_epoch and epoch:
-            previous_model_path = self.path_organizer.get_finetuned_model_path(self.name, tag, epoch)
-            FsTools.rm_file(previous_model_path)
+        if remove_previous_epochs:
+            for prev_epoch in range(epoch):
+                previous_model_path = self.path_organizer.get_finetuned_model_path(self.name, tag, prev_epoch)
+                FsTools.rm_file(previous_model_path)
     
     def append_metrics(self, tag: str, epoch_metrics: dict) -> None:
         """
