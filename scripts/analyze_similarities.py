@@ -19,7 +19,7 @@ from iris_recognition.tools.logger import get_logger
 from iris_recognition.tools.path_organizer import PathOrganizer
 from iris_recognition.irisdataset import IrisDataset
 
-MODELS_TAGS_NODES = [("AlexNetFromZero", "mmu_all_best", "features.12")]
+MODELS_TAGS_NODES = [("GoogLeNet", "mmu_all_best", "flatten")]
 DATASETS = ["mmu_all_train", "mmu_all_val"]
 #DATASETS = ["mmu_all_testing_sample"]
 TRAINSET_LEN_LIMIT = None  # 100  # None
@@ -30,8 +30,8 @@ SIMILARITY_NAME: str = "Podobieństwo cosinusowe"
 # SIMILARITY_NAME: str = "Przeciwieństwo odległości euklidesowej"
 
 #PLOT_TITLE: str = "treningowy + walidacyjny"
-PLOT_TITLE: str = "features.11"
-#FIXED_BEST_THRESHOLD = 0.875
+PLOT_TITLE: str = "avgpool"
+FIXED_BEST_THRESHOLD = None
 
 # SIMILARITY_FUNC: MATCHER_SIMILARITY_FUNCTION = CosineSimilarityMatcher.similarity
 # SIMILARITY_NAME: str = "Cosine Similarity"
@@ -68,6 +68,7 @@ def similarities_distribution_info(similarities: list[float]) -> str:
 for model_name, tag, node_name in MODELS_TAGS_NODES:
     model = get_model_by_name(model_name)
     model.load_finetuned(tag)
+    model.log_node_names()
     LOGGER.info(f"Testing model: {model_name} from tag {tag}, node: {node_name}.")
     model.log_node_names()
     trainset = IrisDataset.load_dataset(DATASETS, None, TRAINSET_LEN_LIMIT)
