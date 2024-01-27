@@ -191,7 +191,7 @@ class Model(abc.ABC):
             train_loss, train_acc = self._train_epoch(device, train_loader, optimizer, criterion)
             train_metrics_str = f"train loss: {train_loss:.4f}, train acc: {train_acc:.4f}"
             metric_to_save = {
-                "epoch": epoch + 1, "train loss": f"{train_loss:.4f}", "train acc": f"{train_acc:.4f}",
+                "epoch": epoch, "train loss": f"{train_loss:.4f}", "train acc": f"{train_acc:.4f}",
             }
 
             val_metrics_str = ""
@@ -202,11 +202,12 @@ class Model(abc.ABC):
                 metric_to_save.update({"val loss": f"{val_loss:.4f}", "val acc": f"{val_acc:.4f}"})
 
             # Print the epoch results
-            self.logger.info(f'Epoch [{epoch + 1}/{params.num_epochs}]: {train_metrics_str}; {val_metrics_str}')
+            self.logger.info(f'Epoch [{epoch}/{params.num_epochs}]: {train_metrics_str}; {val_metrics_str}')
+
+            if tag_to_save:
+                self.append_metrics(tag_to_save, metric_to_save)
 
             if tag_to_save and val_acc >= curr_max_val_acc:
-                self.append_metrics(tag_to_save, metric_to_save)
-                #self.logger.info(f"Saving under tag {tag_to_save}.")
                 self.save(tag_to_save, epoch, remove_previous_epochs=True)
 
             curr_max_val_acc = max(curr_max_val_acc, val_acc)

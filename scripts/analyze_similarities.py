@@ -19,7 +19,7 @@ from iris_recognition.tools.logger import get_logger
 from iris_recognition.tools.path_organizer import PathOrganizer
 from iris_recognition.irisdataset import IrisDataset
 
-MODELS_TAGS_NODES = [("AlexNetFromZero", "mmu_all_best", "features.11")]
+MODELS_TAGS_NODES = [("AlexNetFromZero", "mmu_all_best", "features.12")]
 DATASETS = ["mmu_all_train", "mmu_all_val"]
 #DATASETS = ["mmu_all_testing_sample"]
 TRAINSET_LEN_LIMIT = None  # 100  # None
@@ -31,7 +31,7 @@ SIMILARITY_NAME: str = "Podobieństwo cosinusowe"
 
 #PLOT_TITLE: str = "treningowy + walidacyjny"
 PLOT_TITLE: str = "features.11"
-FIXED_BEST_THRESHOLD = None
+#FIXED_BEST_THRESHOLD = 0.875
 
 # SIMILARITY_FUNC: MATCHER_SIMILARITY_FUNCTION = CosineSimilarityMatcher.similarity
 # SIMILARITY_NAME: str = "Cosine Similarity"

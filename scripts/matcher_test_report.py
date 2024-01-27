@@ -13,9 +13,9 @@ from iris_recognition.irisdataset import IrisDataset
 
 LIMIT_EXAMPLES = None  # TODO: set to None later
 
-MATCHERS: list[Matcher] = [CosineSimilarityMatcher(threshold=0.863)]
+MATCHERS: list[Matcher] = [CosineSimilarityMatcher(threshold=0.875)]
 TESTSET_NAMES = ["mmu_all_testing_sample"]
-MODELS_TAGS_NODES = [("AlexNet", "mmu_all_best", "features.6")]
+MODELS_TAGS_NODES = [("AlexNetFromZero", "mmu_all_best", "features.11")]
 
 LOGGER = get_logger("Matcher test report")
 
