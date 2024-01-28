@@ -19,7 +19,7 @@ from iris_recognition.tools.logger import get_logger
 from iris_recognition.tools.path_organizer import PathOrganizer
 from iris_recognition.irisdataset import IrisDataset
 
-MODELS_TAGS_NODES = [("GoogLeNet", "mmu_all_best", "flatten")]
+MODELS_TAGS_NODES = [("GoogLeNet", "mmu_all_best", "avgpool")]
 DATASETS = ["mmu_all_train", "mmu_all_val"]
 #DATASETS = ["mmu_all_testing_sample"]
 TRAINSET_LEN_LIMIT = None  # 100  # None
@@ -134,5 +134,5 @@ for model_name, tag, node_name in MODELS_TAGS_NODES:
     FsTools.ensure_dir(histogram_path)
     plt.tight_layout()
     plt.savefig(histogram_path)
-    plt.show()
+    #plt.show()
     LOGGER.info(f"Done. Plot saved to {histogram_path}.")
