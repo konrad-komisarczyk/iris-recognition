@@ -21,8 +21,8 @@ from iris_recognition.matchers.cosine_similarity_matcher import CosineSimilarity
 from iris_recognition.feature_extractor import FeatureExtractor
 
 # Init backend model classes
-FEATURE_EXTRACTOR = FeatureExtractor("AlexNet", "mmu_all2", "features.12")
-MATCHER = CosineSimilarityMatcher(0.75)
+FEATURE_EXTRACTOR = FeatureExtractor("AlexNetFromZero", "mmu_all_best", "features.11")
+MATCHER = CosineSimilarityMatcher(0.875)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

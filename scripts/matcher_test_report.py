@@ -20,9 +20,9 @@ HAVE_ENOUGH_RAM = False
 
 LIMIT_EXAMPLES = None  # TODO: set to None later
 
-MATCHERS: list[Matcher] = [CosineSimilarityMatcher(threshold=0.978)]
+MATCHERS: list[Matcher] = [CosineSimilarityMatcher(threshold=0.9)]
 TESTSET_NAMES = ["mmu_all_testing_sample"]
-MODELS_TAGS_NODES = [("GoogLeNet", "mmu_all_best", "avgpool")]
+MODELS_TAGS_NODES = [("AlexNetFromZero", "mmu_all_best", "features.11")]
 
 LOGGER = get_logger("Matcher test report")
 

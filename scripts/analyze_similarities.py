@@ -23,19 +23,22 @@ from iris_recognition.irisdataset import IrisDataset
 
 HAVE_ENOUGH_RAM = False
 
-MODELS_TAGS_NODES = [("GoogLeNet", "mmu_all_best", "avgpool")]
-DATASETS = ["mmu_all_train", "mmu_all_val"]
+MODELS_TAGS_NODES = [("AlexNetFromZero", "ubiris_best", "features.11")]
+#DATASETS = ["mmu_all_train", "mmu_all_val"]
 #DATASETS = ["mmu_all_testing_sample"]
+#DATASETS = ["ubiris_filtered2_testing_sample"]
+#DATASETS = ["ubiris_filtered2_train", "ubiris_filtered2_val"]
 TRAINSET_LEN_LIMIT = None  # 100  # None
 
-SIMILARITY_FUNC: MATCHER_SIMILARITY_FUNCTION = CosineSimilarityMatcher.similarity
-SIMILARITY_NAME: str = "Podobieństwo cosinusowe"
-# SIMILARITY_FUNC: MATCHER_SIMILARITY_FUNCTION = EuclideanDistanceMatcher.distance
-# SIMILARITY_NAME: str = "Przeciwieństwo odległości euklidesowej"
+# SIMILARITY_FUNC: MATCHER_SIMILARITY_FUNCTION = CosineSimilarityMatcher.similarity
+# SIMILARITY_NAME: str = "Podobieństwo cosinusowe"
+SIMILARITY_FUNC: MATCHER_SIMILARITY_FUNCTION = EuclideanDistanceMatcher.distance
+SIMILARITY_NAME: str = "Przeciwieństwo odległości euklidesowej"
 
-PLOT_TITLE: str = "treningowy + walidacyjny"
+PLOT_TITLE: str = "testowy"
+#PLOT_TITLE: str = "treningowy + walidacyjny"
 #PLOT_TITLE: str = "avgpool"
-FIXED_BEST_THRESHOLD = 0.978
+FIXED_BEST_THRESHOLD = -1230.647
 # SIMILARITY_FUNC: MATCHER_SIMILARITY_FUNCTION = CosineSimilarityMatcher.similarity
 # SIMILARITY_NAME: str = "Cosine Similarity"
 
