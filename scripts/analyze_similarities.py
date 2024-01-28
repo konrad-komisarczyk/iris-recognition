@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import itertools
 import os
+import uuid
 from collections import defaultdict
 from statistics import median
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from tqdm import tqdm
 
 from iris_recognition.extracted_features import ExtractedFeatures
 from iris_recognition.matchers.cosine_similarity_matcher import CosineSimilarityMatcher
@@ -19,6 +21,8 @@ from iris_recognition.tools.logger import get_logger
 from iris_recognition.tools.path_organizer import PathOrganizer
 from iris_recognition.irisdataset import IrisDataset
 
+HAVE_ENOUGH_RAM = False
+
 MODELS_TAGS_NODES = [("GoogLeNet", "mmu_all_best", "avgpool")]
 DATASETS = ["mmu_all_train", "mmu_all_val"]
 #DATASETS = ["mmu_all_testing_sample"]
@@ -29,10 +33,9 @@ SIMILARITY_NAME: str = "Podobieństwo cosinusowe"
 # SIMILARITY_FUNC: MATCHER_SIMILARITY_FUNCTION = EuclideanDistanceMatcher.distance
 # SIMILARITY_NAME: str = "Przeciwieństwo odległości euklidesowej"
 
-#PLOT_TITLE: str = "treningowy + walidacyjny"
-PLOT_TITLE: str = "avgpool"
-FIXED_BEST_THRESHOLD = None
-
+PLOT_TITLE: str = "treningowy + walidacyjny"
+#PLOT_TITLE: str = "avgpool"
+FIXED_BEST_THRESHOLD = 0.978
 # SIMILARITY_FUNC: MATCHER_SIMILARITY_FUNCTION = CosineSimilarityMatcher.similarity
 # SIMILARITY_NAME: str = "Cosine Similarity"
 
@@ -51,7 +54,7 @@ def find_best_threshold(all_in: list[float], all_between: list[float]) -> tuple[
     all_values = list(set(all_in) | set(all_between))
     best_threshold = 0
     best_value = -np.Inf
-    for potential_threshold in all_values:
+    for potential_threshold in tqdm(all_values):
         #potential_threshold = (all_values[idx] + all_values[idx + 1]) / 2
         if (new_value := balanced_accuracy_for_threshold(potential_threshold, all_in, all_between)) >= best_value:
             best_value = new_value
@@ -65,6 +68,16 @@ def similarities_distribution_info(similarities: list[float]) -> str:
     return f"(min, median, max): ({min(similarities):.3f}, {median(similarities):.3f}, {max(similarities):.3f})"
 
 
+def load_features(path: str) -> ExtractedFeatures:
+    with open(path, mode="rb") as f:
+        return ExtractedFeatures.from_bytes(f.read())
+
+
+def save_features(features_to_save: ExtractedFeatures, path: str) -> None:
+    with open(path, mode="wb") as f:
+        f.write(features_to_save.to_bytes())
+
+
 for model_name, tag, node_name in MODELS_TAGS_NODES:
     model = get_model_by_name(model_name)
     model.load_finetuned(tag)
@@ -74,18 +87,30 @@ for model_name, tag, node_name in MODELS_TAGS_NODES:
     trainset = IrisDataset.load_dataset(DATASETS, None, TRAINSET_LEN_LIMIT)
 
     LOGGER.info("Extracting features...")
-    label_to_features: dict[str, list[ExtractedFeatures]] = defaultdict(list)
+    label_to_features: dict[str, list[ExtractedFeatures | str]] = defaultdict(list)
+    if not HAVE_ENOUGH_RAM:
+        FsTools.mkdir(f"{PathOrganizer.get_root()}/TEMP_EMBEDDINGS")
+
     features: ExtractedFeatures | None = None
-    for i in range(len(trainset)):
+    for i in tqdm(range(len(trainset))):
         image, label = trainset[i]
         LOGGER.debug(f"Extracting features from image {i} with label {label}.")
         features = model.extract_features(node_name, image)
-        label_to_features[label].append(features)
+        if HAVE_ENOUGH_RAM:
+            label_to_features[label].append(features)
+        else:
+            f_uuid = str(uuid.uuid4())
+            f_path = f"{PathOrganizer.get_root()}/TEMP_EMBEDDINGS/{f_uuid}"
+            save_features(features, f_path)
+            label_to_features[label].append(f_path)
+
     LOGGER.info(f"Features shape {features.shape()}")
 
     LOGGER.info("Calculating in-label similarities...")
     in_label_similarities: dict[str, list[float]] = defaultdict(list)
     for label, label_features in label_to_features.items():
+        if not HAVE_ENOUGH_RAM:
+            label_features = [load_features(f_path) for f_path in label_features]
         LOGGER.debug(f"Calculating in-label similarities for label {label}")
         for features1, features2 in itertools.combinations(label_features, 2):
             in_label_similarities[label].append(SIMILARITY_FUNC(features1, features2))
@@ -96,6 +121,9 @@ for model_name, tag, node_name in MODELS_TAGS_NODES:
     LOGGER.info("Calculating between-label similarities...")
     between_label_similarities: dict[tuple[str, str], list[float]] = defaultdict(list)
     for (label1, label1_features), (label2, label2_features) in itertools.combinations(label_to_features.items(), 2):
+        if not HAVE_ENOUGH_RAM:
+            label1_features = [load_features(f_path) for f_path in label1_features]
+            label2_features = [load_features(f_path) for f_path in label2_features]
         LOGGER.debug(f"Calculating between-label similarities for labels {label1} - {label2}")
         for features1, features2 in itertools.product(label1_features, label2_features):
             between_label_similarities[(label1, label2)].append(SIMILARITY_FUNC(features1, features2))
@@ -124,7 +152,7 @@ for model_name, tag, node_name in MODELS_TAGS_NODES:
     plt.rcParams['font.size'] = 14
     datasets_name_joined = ','.join(DATASETS)
     plt.title(PLOT_TITLE)
-    #plt.suptitle(SIMILARITY_NAME)
+    plt.suptitle(SIMILARITY_NAME)
     plt.axvline(x=best_threshold, color="r", label="wyznaczony próg", linestyle="dashed")
     plt.ylabel("gęstość przybliżonego rozkładu")
     plt.xlabel("wartość metryki podobieństwa")
@@ -134,5 +162,5 @@ for model_name, tag, node_name in MODELS_TAGS_NODES:
     FsTools.ensure_dir(histogram_path)
     plt.tight_layout()
     plt.savefig(histogram_path)
-    #plt.show()
+    plt.show()
     LOGGER.info(f"Done. Plot saved to {histogram_path}.")
