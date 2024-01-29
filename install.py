@@ -10,7 +10,6 @@ from iris_recognition.final_solution_config import FINAL_SOLUTION_MODEL_NAME, FI
 from iris_recognition.tools.fs_tools import FsTools
 from iris_recognition.tools.path_organizer import PathOrganizer
 
-
 path_organizer = PathOrganizer()
 SEGMENTATION_MODEL_FILE_ID = '1aKSvel_YCRTeY59DNoFjbaxnghlrpqYM'
 EXTRACTION_MODEL_FILE_ID = '1o0yE0yYyN9SwrCqTJZPZ-tvEI9JQ2V8P'
@@ -69,13 +68,13 @@ def download_extract_segmentation_model() -> None:
 def init_webapp() -> None:
     print("Przygotowywanie serwera aplikacji webowej")
     try:
-        process_call = ["python", "irisverify/manage.py", "makemigrations"]
+        process_call = [sys.executable, "irisverify/manage.py", "makemigrations"]
         print(f"Calling process: {process_call}")
         subprocess.run(process_call)
-        process_call = ["python", "irisverify/manage.py", "migrate"]
+        process_call = [sys.executable, "irisverify/manage.py", "migrate"]
         print(f"Calling process: {process_call}")
         subprocess.run(process_call)
-        process_call = ["python", "irisverify/manage.py", "collectstatic"]
+        process_call = [sys.executable, "irisverify/manage.py", "collectstatic"]
         print(f"Calling process: {process_call}")
         subprocess.run(process_call)
         print("Serwer aplikacji webowej został przygotowany. Instalacja przebiegła pomyślnie.")
@@ -88,7 +87,7 @@ def init_webapp() -> None:
 def run_webapp() -> None:
     print("Uruchamianie serwera aplikacji webowej...")
     try:
-        process_call = ["python", "irisverify/manage.py", "runserver"]
+        process_call = [sys.executable, "irisverify/manage.py", "runserver"]
         print(f"Calling process: {process_call}")
         subprocess.run(process_call)
     except Exception:
@@ -99,9 +98,13 @@ def run_webapp() -> None:
 
 
 def main() -> None:
-    download_feature_extraction_model()
-    download_extract_segmentation_model()
-    init_webapp()
+    if not os.path.isfile(path_organizer.get_finetuned_model_path(FINAL_SOLUTION_MODEL_NAME, FINAL_SOLUTION_MODEL_TAG,
+                                                                  FINAL_SOLUTION_MODEL_EPOCH)):
+        download_feature_extraction_model()
+    if not os.path.isdir(os.path.join(path_organizer.get_segmentation_model_path(), "M1")):
+        download_extract_segmentation_model()
+    if not os.path.isfile(os.path.join("irisverify", "db.sqlite3")):
+        init_webapp()
     if get_yn_input("Czy chcesz uruchomić serwer aplikacji webowej?"):
         run_webapp()
     else:
