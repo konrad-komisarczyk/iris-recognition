@@ -8,7 +8,9 @@ from iris_recognition.tools.path_organizer import PathOrganizer
 
 TAG = "mmu_all_best"
 MODEL = "AlexNetFromZero"
-PLOT_LOSSES: bool = False
+FNAME_PREFIX = "fromzero_"
+PLOT_SUPTITLE = "AlexNet inicjalizowana losowo, learning_rate=0.00002"
+PLOT_LOSSES: bool = True
 
 INPUT_METRICS_PATH = PathOrganizer().get_finetuned_model_metrics_path(MODEL, TAG)
 with open(INPUT_METRICS_PATH, mode="r", encoding="utf-8") as f:
@@ -26,14 +28,15 @@ with open(INPUT_METRICS_PATH, mode="r", encoding="utf-8") as f:
     plt.rcParams['font.size'] = 14
     df.plot()
     if PLOT_LOSSES:
-        plt.title("Zmiana wartości funkcji straty w czasie")
-        plt.xlabel("Wartość funkcji straty")
+        plt.suptitle("Zmiana wartości funkcji straty w czasie")
+        plt.ylabel("Wartość funkcji straty")
     else:
-        plt.title("Zmiana dokładności modelu w czasie")
-        plt.xlabel("Dokładność")
+        plt.suptitle("Zmiana dokładności modelu w czasie")
+        plt.ylabel("Dokładność")
+    plt.title(PLOT_SUPTITLE)
     plt.grid(True)
     plt.xlabel("Numer epoki")
-    plot_path = f"{PathOrganizer.get_root()}/learning_curves/{TAG}-{'loss' if PLOT_LOSSES else 'acc'}.png"
+    plot_path = f"{PathOrganizer.get_root()}/learning_curves/{FNAME_PREFIX}{TAG}-{'loss' if PLOT_LOSSES else 'acc'}.png"
     plt.savefig(plot_path)
     plt.show()
     print("Done")

@@ -23,3 +23,5 @@ irisverify/db.sqlite3
 /irisverify/log.log
 *testing_sample
 /data/
+/learning_curves/
+/similarities_plots/
