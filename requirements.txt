@@ -2,6 +2,7 @@ fontawesomefree
 Django==4.2.7
 django-crispy-forms
 django-jquery
+gdown==5.0.1
 crispy-bootstrap4
 matplotlib==3.7.4
 numpy==1.24.4
