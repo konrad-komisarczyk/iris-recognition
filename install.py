@@ -97,9 +97,9 @@ def run_webapp() -> None:
 
 
 def main() -> None:
-    #download_feature_extraction_model()
-    #download_extract_segmentation_model()
-    #init_webapp()
+    download_feature_extraction_model()
+    download_extract_segmentation_model()
+    init_webapp()
     if get_yn_input("Czy chcesz uruchomić serwer aplikacji webowej?"):
         run_webapp()
     else:
