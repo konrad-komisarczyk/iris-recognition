@@ -19,6 +19,12 @@ class PathOrganizer:
         """
         return str(pathlib.Path(__file__).parent.parent.parent.absolute())
 
+    def get_segmentation_model_path(self) -> str:
+        """
+        :return: path where segmentation model should be copied
+        """
+        return os.path.join(self.prefix, "preprocessing", "trained_models")
+
     def get_dataset_preprocessed(self, dataset_name: str) -> str:
         """
         :param dataset_name: dataset name

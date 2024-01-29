@@ -2,6 +2,7 @@ crispy-bootstrap4
 Django
 django-crispy-forms
 fontawesomefree
+gdown
 numpy
 opencv-python
 pandas
