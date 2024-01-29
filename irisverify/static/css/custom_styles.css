@@ -44,7 +44,9 @@ body {
 
 .form-control-file {
     margin: auto;
-    width: 55%;
+    display: inline-block;
+    width: 60%;
+    text-align: center;
 }
 
 #black-overlay {
@@ -77,4 +79,8 @@ body {
 .spinner-border {
     width: 5rem;
     height: 5rem;
+}
+
+input {
+    display: inline-block;
 }

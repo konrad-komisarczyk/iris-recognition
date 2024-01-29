@@ -1,3 +1,4 @@
+# from memory_profiler import profile
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
@@ -27,6 +28,7 @@ def secrets(request):
     return render(request, "secrets.html", {"secret": str(user.websiteuser.unique_information)})
 
 
+# @profile
 def login_view(request):
     login_error = False
     user_exists = True
@@ -70,6 +72,7 @@ def username_exists(username):
     return WebsiteUser.objects.filter(user__in=User.objects.filter(username=username).all()).exists()
 
 
+# @profile
 def register_view(request):
     if request.method == "POST":
         form = WebsiteUserCreationForm(request.POST, request.FILES)
