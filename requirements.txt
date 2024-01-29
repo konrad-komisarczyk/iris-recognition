@@ -1,14 +1,19 @@
-crispy-bootstrap4
-Django
-django-crispy-forms
 fontawesomefree
-numpy
-opencv-python
-pandas
-Pillow
+Django==4.2.7
+django-crispy-forms
+django-jquery
+crispy-bootstrap4
+matplotlib==3.7.4
+numpy==1.24.4
+opencv_python==4.8.1.78
+opencv_python_headless==4.8.1.78
+pandas==2.0.3
+Pillow==10.2.0
+psutil==5.9.7
+segmentation_models_pytorch==0.3.3
 scikit-image
 torch
 torchvision
-# torch==2.1.0+cu118
-# torchvision==0.16.0+cu118
-tqdm
+tqdm==4.66.1
+split-folders
+notebook
