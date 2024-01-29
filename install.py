@@ -56,7 +56,9 @@ def download_extract_segmentation_model() -> None:
         gdown.download(url, zip_file, quiet=False)
         model_path = path_organizer.get_segmentation_model_path()
         FsTools.mkdir(model_path)
+        print("Rozpakowywanie modelu...")
         unzip_file(zip_file, model_path)
+        FsTools.rm_file(zip_file)
         print("Z powodzeniem pobrano model do segmentacji.")
     except Exception:
         print("Pobieranie modelu zakończone niepowodzeniem. \n"
