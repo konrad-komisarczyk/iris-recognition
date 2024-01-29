@@ -9,7 +9,7 @@ Zawiera rozwiązanie w tematyce rozpoznawania osób na podstawie zdjęcia tęcz�
 * `git clone https://github.com/konrad-komisarczyk/iris-recognition`
 * stworzenie nowego wirtualnego środowiska korzystającego z Pythona w wersji
 3.10.1  i przejście do katalogu projektu
-* dodanie wersji bibliotek `torch` i `torchvision` do `requirements.txt` wykorzystujących CUDA, jeżeli CUDA jest dostępne
+* zakomentowanie linijek z `torch` i `torchvision` w `requirements.txt` i instalacja ich przy pomocy odpowiedniej komendy wygenerowanej na stronie https://pytorch.org/get-started/locally/ jeżeli CUDA jest dostępne
 * `pip install -r requirements.txt`
 * `python install.py`
 * aplikacja webowa może być uruchomiona w dowolnym momencie z użyciem polecenia:
