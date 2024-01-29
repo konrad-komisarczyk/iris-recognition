@@ -4,6 +4,19 @@ Niniejszy projekt stanowi przedmiot pracy inżynierskiej realizowanej na Politec
 
 Zawiera rozwiązanie w tematyce rozpoznawania osób na podstawie zdjęcia tęczówki.
 
-Dokładna instrukcja wdrożeniowa znajduje się w załączniku pracy.
+## Instrukcja instalacji
+
+* `git clone https://github.com/konrad-komisarczyk/iris-recognition`
+* stworzenie nowego wirtualnego środowiska korzystającego z Pythona w wersji
+3.10.1  i przejście do katalogu projektu
+* `pip install -r requirements.txt`
+* `python install.py`
+* aplikacja webowa może być uruchomiona w dowolnym momencie z użyciem polecenia:
+`python irisverify/manage.py runserver`
+
+W przypadku niepowodzenia należy skorzystać z dokładnej instrukcji 
+wdrożeniowej, która znajduje się w załączniku pracy.
+
+
 
 Autorzy: Konrad Komisarczyk, Jędrzej Sokołowski, Hubert Kozubek

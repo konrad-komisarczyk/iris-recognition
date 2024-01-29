@@ -15,6 +15,7 @@ path_organizer = PathOrganizer()
 SEGMENTATION_MODEL_FILE_ID = '1aKSvel_YCRTeY59DNoFjbaxnghlrpqYM'
 EXTRACTION_MODEL_FILE_ID = '1o0yE0yYyN9SwrCqTJZPZ-tvEI9JQ2V8P'
 
+
 def unzip_file(zip_file, extract_to):
     with zipfile.ZipFile(zip_file, 'r') as zip_ref:
         zip_ref.extractall(extract_to)
