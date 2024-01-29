@@ -2,14 +2,13 @@ crispy-bootstrap4
 Django
 django-crispy-forms
 fontawesomefree
-matplotlib
 numpy
-torch
-torchvision
-tqdm
-transformers
+opencv-python
 pandas
 Pillow
-opencv-python
 scikit-image
-split-folders
+torch
+torchvision
+# torch==2.1.0+cu118
+# torchvision==0.16.0+cu118
+tqdm
