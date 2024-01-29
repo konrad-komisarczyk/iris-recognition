@@ -27,6 +27,8 @@ class Preprocessor:
 
     def preprocess_file(self, input_filename: str) -> Image:
         try:
+            if not torch.cuda.is_available():
+                self.logger.warning("CUDA is not available. It is required for system to work faster.")
             input_file_path = os.path.join(self.destination_dir, input_filename)
             self.logger.info(f"Started preprocessing image {input_file_path}")
             predictor_path = os.path.join(self.path_organizer.get_root(), "preprocessing", "predict_one_img.py")

@@ -4,6 +4,7 @@ import sys
 import zipfile
 
 import gdown
+import torch
 
 from iris_recognition.final_solution_config import FINAL_SOLUTION_MODEL_NAME, FINAL_SOLUTION_MODEL_TAG, \
     FINAL_SOLUTION_MODEL_EPOCH
@@ -99,6 +100,10 @@ def run_webapp() -> None:
 
 
 def main() -> None:
+    if not torch.cuda.is_available():
+        print("UWAGA: Oprogramowanie CUDA nie jest dostępne.\n"
+              "Czy zainstalowałeś wersję torch zgodnie z sekcją 'Pytorch CUDA' w instrukcji?\n"
+              "Brak akceleracji sprzętowej powoduje, że ekstrakcja cech może zająć ~10min.")
     download_feature_extraction_model()
     download_extract_segmentation_model()
     init_webapp()
