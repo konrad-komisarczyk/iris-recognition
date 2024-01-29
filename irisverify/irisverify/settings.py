@@ -14,12 +14,13 @@ import os
 from pathlib import Path
 import sys
 
+PROJ_DIR = Path(__file__).resolve().parent.parent.parent
+sys.path.append(os.path.join(PROJ_DIR, ""))
+
 from iris_recognition.final_solution_config import FINAL_SOLUTION_MODEL_NAME, FINAL_SOLUTION_MODEL_TAG, \
     FINAL_SOLUTION_MODEL_NODE, FINAL_SOLUTION_MATCHER_THRESHOLD, FINAL_SOLUTION_MATCHER_CLASS
 from iris_recognition.feature_extractor import FeatureExtractor
 
-PROJ_DIR = Path(__file__).resolve().parent.parent.parent
-sys.path.append(os.path.join(PROJ_DIR, ""))
 
 # Init backend model classes
 FEATURE_EXTRACTOR = FeatureExtractor(FINAL_SOLUTION_MODEL_NAME,
